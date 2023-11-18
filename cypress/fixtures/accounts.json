@@ -1,0 +1,17 @@
+[
+    {
+        "username": "admin",
+        "password": "wrongpassword",
+        "correct": false
+    },
+    {
+        "username": "admin",
+        "password": "admin",
+        "correct": true
+    },
+    {
+        "username": "normal",
+        "password": "normal",
+        "correct": true
+    }
+]

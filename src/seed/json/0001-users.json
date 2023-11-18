@@ -1,0 +1,15 @@
+{
+    "type": "user",
+    "data": [
+        {
+            "username": "admin",
+            "displayname": "admin",
+            "isAdmin": true
+        },
+        {
+            "username": "normal",
+            "displayname": "normal",
+            "isAdmin": false
+        }
+    ]
+}
