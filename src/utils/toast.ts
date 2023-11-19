@@ -1,3 +1,5 @@
+'use client'
+
 import { ToastOptions, toast } from 'react-toastify'
 
 const defaultToastConfig: Partial<ToastOptions> = {

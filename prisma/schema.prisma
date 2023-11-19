@@ -9,6 +9,40 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
+
+  createdByOrderings Ordering[] @relation(name: "UserCreatorOrderings")
+  updatedByOrderings Ordering[] @relation(name: "UserUpdaterOrderings")
+  deletedByOrderings Ordering[] @relation(name: "UserDeleterOrderings")
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  identifier String @unique
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  orderings Ordering[]
+}
+
+model Ordering {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  selectedMonth String
+  category  String
+  price     Float
+  quantity  Int
+  createdBy Int
+  creator   User     @relation(fields: [createdBy], references: [id], name: "UserCreatorOrderings")
+  updatedBy Int
+  updater   User     @relation(fields: [updatedBy], references: [id], name: "UserUpdaterOrderings")
+  deletedBy Int?
+  deleter   User?    @relation(fields: [deletedBy], references: [id], name: "UserDeleterOrderings")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
 }
 
 model SeedHistory {

@@ -1,10 +1,20 @@
 'use client'
 
-import { UserSessionData } from '@/types/session'
-import { FormEvent, useState } from 'react'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+
+import { getCurrentMonthIdentifier } from '@/utils/month'
 
 const Dashboard = () => {
-    return <div></div>
+    const router = useRouter()
+
+    // redirect to the current month
+    useEffect(() => {
+        const currentMonth = getCurrentMonthIdentifier()
+        router.push(`/ordering/dashboard/${currentMonth}`)
+    }, [])
+
+    return false
 }
 
 export default Dashboard

@@ -6,7 +6,6 @@ import { UserSessionData } from '@/types/session'
 
 import { ServerConfiguration } from '@/utils/constant'
 import { verifyToken } from '@/utils/auth'
-import toastHelper from '@/utils/toast'
 
 import TopBar from '@/components/common/TopBar'
 
@@ -18,7 +17,6 @@ async function getUserSessionFromServer(): Promise<UserSessionData | null> {
 
     const token = nextCookies.get(ServerConfiguration.SessionKeyName)
     if (!token || !token.value) {
-        toastHelper.error('Credential expired, please login again')
         redirect('/login')
         return null
     }
@@ -27,13 +25,11 @@ async function getUserSessionFromServer(): Promise<UserSessionData | null> {
     const user = await userService.getUserById(jwtInfo.id)
 
     if (!user) {
-        toastHelper.error('Credential expired, please login again')
         redirect('/login')
         return null
     }
 
     if (!user.activated) {
-        toastHelper.error('Credential expired, please login again')
         redirect('/login')
         return null
     }

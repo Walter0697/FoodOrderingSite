@@ -7,7 +7,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DesktopDateTimePicker as DTPicker } from '@mui/x-date-pickers/DesktopDateTimePicker'
 
-import { Typography, Grid, TextField, LinearProgress } from '@mui/material'
+import { Typography, Grid, TextField } from '@mui/material'
 
 import dayjs from 'dayjs'
 import toastHelper from '@/utils/toast'
