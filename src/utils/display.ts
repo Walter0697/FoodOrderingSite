@@ -23,3 +23,10 @@ export const getColorForOrderingType = (orderingType: OrderingType) => {
     }
     return null
 }
+
+export const getProductIdentifierFromURL = (url: string) => {
+    const decoded = decodeURIComponent(url)
+    const split = decoded.split('/')
+    const identifier = split[split.length - 1]
+    return identifier
+}

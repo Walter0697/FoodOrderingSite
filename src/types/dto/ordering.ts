@@ -1,5 +1,5 @@
 export type ManageOrderingDto = {
-    productIdentifier: string
+    productId: number
     category: string
     quantity: number
     price: number

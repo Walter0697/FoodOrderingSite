@@ -10,31 +10,33 @@ const getOrderingsByMonth = async (
     const orderings = await getPrisma().ordering.findMany({
         where: {
             selectedMonth: monthIdentifier,
+            deletedAt: null,
         },
     })
     return orderings
+}
+
+const getOrderByProductIdAndMonth = async (
+    productId: number,
+    monthIdentifier: string
+): Promise<Ordering | null> => {
+    const ordering = await getPrisma().ordering.findFirst({
+        where: {
+            productId: productId,
+            selectedMonth: monthIdentifier,
+        },
+    })
+    return ordering
 }
 
 const upsertOrdering = async (
     dto: ManageOrderingDto,
     userId: number
 ): Promise<Ordering | DatabaseErrorObj> => {
-    const product = await getPrisma().product.findUnique({
-        where: {
-            identifier: dto.productIdentifier,
-        },
-    })
-
-    if (!product) {
-        return {
-            message: 'Product not found',
-        }
-    }
-
     const existingOrder = await getPrisma().ordering.findFirst({
         where: {
             selectedMonth: dto.selectedMonth,
-            productId: product.id,
+            productId: dto.productId,
         },
     })
 
@@ -58,7 +60,7 @@ const upsertOrdering = async (
             category: dto.category,
             price: dto.price,
             selectedMonth: dto.selectedMonth,
-            productId: product.id,
+            productId: dto.productId,
             createdBy: userId,
             updatedBy: userId,
         },
@@ -69,6 +71,7 @@ const upsertOrdering = async (
 
 const orderingService = {
     getOrderingsByMonth,
+    getOrderByProductIdAndMonth,
     upsertOrdering,
 }
 

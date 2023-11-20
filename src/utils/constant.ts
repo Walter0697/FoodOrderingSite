@@ -5,3 +5,7 @@ export const ServerConfiguration = {
 export const ServerURLPrefix = {
     ChingKee: 'https://www.35261646.com.hk/products/',
 }
+
+export const StaticPath = {
+    HomePage: '/login',
+}

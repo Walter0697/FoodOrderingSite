@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 
 import { UserSessionData } from '@/types/session'
 
-import { ServerConfiguration } from '@/utils/constant'
+import { ServerConfiguration, StaticPath } from '@/utils/constant'
 import { verifyToken } from '@/utils/auth'
 
 import TopBar from '@/components/common/TopBar'
@@ -17,7 +17,7 @@ async function getUserSessionFromServer(): Promise<UserSessionData | null> {
 
     const token = nextCookies.get(ServerConfiguration.SessionKeyName)
     if (!token || !token.value) {
-        redirect('/login')
+        redirect(StaticPath.HomePage)
         return null
     }
 
@@ -25,12 +25,12 @@ async function getUserSessionFromServer(): Promise<UserSessionData | null> {
     const user = await userService.getUserById(jwtInfo.id)
 
     if (!user) {
-        redirect('/login')
+        redirect(StaticPath.HomePage)
         return null
     }
 
     if (!user.activated) {
-        redirect('/login')
+        redirect(StaticPath.HomePage)
         return null
     }
 

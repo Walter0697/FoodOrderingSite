@@ -58,7 +58,7 @@ const MonthlyDashboard = () => {
     const [locked, setLocked] = useState<boolean>(false)
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
 
-    const selectedMonth = params ? params.selectedMonth : ''
+    const selectedMonth: string = params ? params.selectedMonth as string : ''
 
     const onItemAddHandler = () => {
         setDialogOpen(true)
@@ -78,7 +78,7 @@ const MonthlyDashboard = () => {
                 <Grid item xs={12}>
                     <DashboardTitle />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} pb={2}>
                     <DashboardActionList onAddHandler={onItemAddHandler} />
                 </Grid>
                 <Grid item xs={12}>
@@ -91,6 +91,7 @@ const MonthlyDashboard = () => {
             </Grid>
             <OrderingDialog
                 open={dialogOpen}
+                selectedMonth={selectedMonth}
                 onItemCreatedHandler={onItemCreatedHandler}
                 handleClose={() => setDialogOpen(false)}
             />

@@ -33,7 +33,7 @@ function DashboardTitle() {
     }, [])
 
     return (
-        <Grid container spacing={0}>
+        <Grid container spacing={0} pb={2}>
             <Grid item xs={6}>
                 <Typography variant="h6" mb={5}>
                     Orderings for{' '}

@@ -26,6 +26,8 @@ import { BiSolidFoodMenu } from 'react-icons/bi'
 
 import { UserSessionData } from '@/types/session'
 
+import { StaticPath } from '@/utils/constant'
+
 import { block } from 'million/react'
 
 const ListItems = [
@@ -80,7 +82,7 @@ function TopBar({ userSession }: { userSession: UserSessionData | null }) {
             })
 
             if (result.status === 200) {
-                router.push('/login')
+                router.push(StaticPath.HomePage)
             }
         } catch (err: Error | unknown) {
             if (err instanceof Error) {

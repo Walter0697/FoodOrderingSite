@@ -9,3 +9,7 @@
 -   [] Fetching information from Snack Ordering Company
 -   [] Calculating total
 -   [] Status for Monthly Ordering
+
+### 🐜 Limitation
+
+-   Middleware does not work as expected in Next.js 13, it forces all routes to have the same middleware, resulting in server side code broken in client side. So I have to use a workaround to mock a middleware behaviour.
