@@ -9,6 +9,7 @@ import {
     TableBody,
     TableCell,
     Paper,
+    IconButton,
 } from '@mui/material'
 
 import { OrderingListItem } from '@/types/display/ordering'
@@ -16,6 +17,11 @@ import {
     getDisplayTextForOrderingType,
     getColorForOrderingType,
 } from '@/utils/display'
+
+import { AiFillEdit } from 'react-icons/ai'
+import { TbTrashXFilled } from 'react-icons/tb'
+
+import toastHelper from '@/utils/toast'
 
 import { block } from 'million/react'
 
@@ -34,6 +40,7 @@ type OrderingTableProps = {
     itemList: OrderingListItem[]
     disabled?: boolean
     onItemEditHandler?: (item: OrderingListItem) => void
+    onItemRemoveHandler?: (item: OrderingListItem) => void
 }
 
 // name quantity type unit price total
@@ -104,7 +111,9 @@ function OrderingTable({
     itemList,
     disabled,
     onItemEditHandler,
+    onItemRemoveHandler,
 }: OrderingTableProps) {
+    const [loading, setLoading] = useState<boolean>(false)
     const [currentSorting, setCurrentSorting] = useState<SortOrder | null>(null)
 
     const onCurrentSortingChangeHandler = (column: string) => {
@@ -121,6 +130,43 @@ function OrderingTable({
         setCurrentSorting({ orderBy: column, order: 'desc' })
     }
 
+    const onEditHandler = async (ordering: OrderingListItem) => {}
+
+    const onRemoveHandler = async (ordering: OrderingListItem) => {
+        const confirmed = window.confirm(
+            `Are you sure that you want to remove ${ordering.productName}`
+        )
+        if (confirmed) {
+            setLoading(true)
+            try {
+                const response = await fetch(
+                    `/api/ordering/item/${ordering.id}`,
+                    {
+                        method: 'DELETE',
+                    }
+                )
+                if (response.status === 200) {
+                    toastHelper.success(
+                        `${ordering.productName} has been removed`
+                    )
+                    if (onItemRemoveHandler) {
+                        onItemRemoveHandler(ordering)
+                    }
+                } else {
+                    toastHelper.error(
+                        `Failed to remove ${ordering.productName}`
+                    )
+                }
+            } catch (err: Error | unknown) {
+                if (err instanceof Error) {
+                    toastHelper.error(err.message)
+                }
+            } finally {
+                setLoading(false)
+            }
+        }
+    }
+
     return (
         <Paper
             sx={{
@@ -128,7 +174,7 @@ function OrderingTable({
                 overflow: 'hidden',
             }}
         >
-            <TableContainer sx={{ maxHeight: '65vh' }}>
+            <TableContainer sx={{ maxHeight: '50vh' }}>
                 <Table sx={{ minWidth: 750 }} size={'small'} stickyHeader>
                     <SortableTableHead
                         itemList={itemList}
@@ -175,7 +221,22 @@ function OrderingTable({
                                 <TableCell align={'right'}>
                                     {item.updatedBy}
                                 </TableCell>
-                                <TableCell align={'right'}>Action</TableCell>
+                                <TableCell align={'right'}>
+                                    <IconButton
+                                        disabled={disabled || loading}
+                                        color={'success'}
+                                        onClick={() => onEditHandler(item)}
+                                    >
+                                        <AiFillEdit />
+                                    </IconButton>
+                                    <IconButton
+                                        disabled={disabled || loading}
+                                        color={'error'}
+                                        onClick={() => onRemoveHandler(item)}
+                                    >
+                                        <TbTrashXFilled />
+                                    </IconButton>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

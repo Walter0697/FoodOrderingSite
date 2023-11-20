@@ -60,6 +60,10 @@ const MonthlyDashboard = () => {
         refetch()
     }
 
+    const onItemRemoveHandler = (item: OrderingListItem) => {
+        refetch()
+    }
+
     const onItemEditHandler = (item: OrderingListItem) => {
         console.log('edit', item)
     }
@@ -81,6 +85,7 @@ const MonthlyDashboard = () => {
                         itemList={itemList}
                         disabled={locked || loading}
                         onItemEditHandler={onItemEditHandler}
+                        onItemRemoveHandler={onItemRemoveHandler}
                     />
                 </Grid>
                 <Grid item xs={12}>

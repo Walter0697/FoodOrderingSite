@@ -47,7 +47,7 @@ function OrderingDialog({
         setProductData(null)
         setLink('')
         setUnit(1)
-    }, [])
+    }, [open])
 
     const onFetchHandler = async () => {
         setLoading(true)

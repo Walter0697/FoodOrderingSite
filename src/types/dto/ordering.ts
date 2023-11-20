@@ -5,3 +5,9 @@ export type ManageOrderingDto = {
     price: number
     selectedMonth: string
 }
+
+export type EditOrderingDto = {
+    orderId: number
+    category: string
+    quantity: number
+}
