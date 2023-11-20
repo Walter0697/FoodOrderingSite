@@ -21,6 +21,7 @@ const Transition: React.ForwardRefExoticComponent<
 type BaseFormProps = {
     open: boolean
     handleClose: () => void
+    loading?: boolean
     title: string
     onSubmitHandler?: () => void
     onCloseHandler?: () => void
@@ -30,6 +31,7 @@ type BaseFormProps = {
 function BaseForm({
     open,
     handleClose,
+    loading,
     title,
     onSubmitHandler,
     children,
@@ -57,6 +59,7 @@ function BaseForm({
                         variant="contained"
                         color={'error'}
                         onClick={handleClose}
+                        loading={loading}
                     >
                         Close
                     </LoadingButton>
@@ -64,6 +67,7 @@ function BaseForm({
                         variant="contained"
                         color={'primary'}
                         type={'submit'}
+                        loading={loading}
                     >
                         Confirm
                     </LoadingButton>

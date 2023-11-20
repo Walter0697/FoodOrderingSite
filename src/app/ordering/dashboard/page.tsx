@@ -12,7 +12,7 @@ const Dashboard = () => {
     useEffect(() => {
         const currentMonth = getCurrentMonthIdentifier()
         router.push(`/ordering/dashboard/${currentMonth}`)
-    }, [])
+    }, [router])
 
     return false
 }

@@ -63,7 +63,7 @@ function TopBar({ userSession }: { userSession: UserSessionData | null }) {
     useEffect(() => {
         if (!userSession) return
         setUserData(userSession)
-    }, [userSession])
+    }, [userSession, setUserData])
 
     const itemList = useMemo(() => {
         if (!userSession) return []

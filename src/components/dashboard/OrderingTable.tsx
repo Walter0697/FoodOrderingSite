@@ -12,7 +12,10 @@ import {
 } from '@mui/material'
 
 import { OrderingListItem } from '@/types/display/ordering'
-import { getDisplayTextForOrderingType, getColorForOrderingType } from '@/utils/display'
+import {
+    getDisplayTextForOrderingType,
+    getColorForOrderingType,
+} from '@/utils/display'
 
 import { block } from 'million/react'
 
@@ -29,6 +32,8 @@ type TableHeadProps = {
 
 type OrderingTableProps = {
     itemList: OrderingListItem[]
+    disabled?: boolean
+    onItemEditHandler?: (item: OrderingListItem) => void
 }
 
 // name quantity type unit price total
@@ -95,7 +100,11 @@ function SortableTableHead({
     )
 }
 
-function OrderingTable({ itemList }: OrderingTableProps) {
+function OrderingTable({
+    itemList,
+    disabled,
+    onItemEditHandler,
+}: OrderingTableProps) {
     const [currentSorting, setCurrentSorting] = useState<SortOrder | null>(null)
 
     const onCurrentSortingChangeHandler = (column: string) => {

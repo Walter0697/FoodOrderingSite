@@ -103,6 +103,7 @@ function FirstLoginDialog({
     return (
         <BaseForm
             open={open}
+            loading={loading}
             title={'Activate your account'}
             onSubmitHandler={onSubmitHandler}
             handleClose={handleClose}

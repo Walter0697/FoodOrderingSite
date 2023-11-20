@@ -79,6 +79,7 @@ function DashboardTitle() {
                             sx={{ height: '80%' }}
                             disabled={!gotoMonth}
                             onClick={onGoToMonthHandler}
+                            fullWidth
                         >
                             Go!
                         </Button>

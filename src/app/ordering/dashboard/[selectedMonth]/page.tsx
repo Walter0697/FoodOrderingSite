@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 
 import DashboardTitle from '@/components/dashboard/DashboardTitle'
+import DashboardActionList from '@/components/dashboard/DashboardActionList'
 import OrderingTable from '@/components/dashboard/OrderingTable'
+import OrderingDialog from '@/components/dashboard/OrderingDialog'
 
 import { OrderingListItem } from '@/types/display/ordering'
 
@@ -53,7 +55,22 @@ const itemList = [
 
 const MonthlyDashboard = () => {
     const params = useParams()
+    const [locked, setLocked] = useState<boolean>(false)
+    const [dialogOpen, setDialogOpen] = useState<boolean>(false)
+
     const selectedMonth = params ? params.selectedMonth : ''
+
+    const onItemAddHandler = () => {
+        setDialogOpen(true)
+    }
+
+    const onItemCreatedHandler = () => {
+        console.log('created')
+    }
+
+    const onItemEditHandler = (item: OrderingListItem) => {
+        console.log('edit', item)
+    }
 
     return (
         <Box p={3}>
@@ -61,11 +78,22 @@ const MonthlyDashboard = () => {
                 <Grid item xs={12}>
                     <DashboardTitle />
                 </Grid>
-
                 <Grid item xs={12}>
-                    <OrderingTable itemList={itemList} />
+                    <DashboardActionList onAddHandler={onItemAddHandler} />
+                </Grid>
+                <Grid item xs={12}>
+                    <OrderingTable
+                        itemList={itemList}
+                        disabled={locked}
+                        onItemEditHandler={onItemEditHandler}
+                    />
                 </Grid>
             </Grid>
+            <OrderingDialog
+                open={dialogOpen}
+                onItemCreatedHandler={onItemCreatedHandler}
+                handleClose={() => setDialogOpen(false)}
+            />
         </Box>
     )
 }
