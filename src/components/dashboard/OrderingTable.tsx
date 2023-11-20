@@ -124,7 +124,7 @@ function OrderingTable({
     return (
         <Paper
             sx={{
-                maxHeight: '65vh',
+                maxHeight: '60vh',
                 overflow: 'hidden',
             }}
         >
@@ -151,7 +151,13 @@ function OrderingTable({
                                 <TableCell align={'left'}>
                                     {index + 1}
                                 </TableCell>
-                                <TableCell align={'left'}>
+                                <TableCell
+                                    align={'left'}
+                                    sx={{
+                                        cursor: 'pointer',
+                                    }}
+                                    onClick={() => window.open(item.link)}
+                                >
                                     {item.productName}
                                 </TableCell>
                                 <TableCell align={'right'}>

@@ -1,71 +1,63 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter, useParams } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useParams } from 'next/navigation'
+
+import { Ordering } from '@prisma/client'
 
 import DashboardTitle from '@/components/dashboard/DashboardTitle'
 import DashboardActionList from '@/components/dashboard/DashboardActionList'
 import OrderingTable from '@/components/dashboard/OrderingTable'
 import OrderingDialog from '@/components/dashboard/OrderingDialog'
+import TotalPriceOverlay from '@/components/dashboard/TotalPriceOverlay'
 
 import { OrderingListItem } from '@/types/display/ordering'
 
-import { getCurrentMonthIdentifier, getMonthIdentifier } from '@/utils/month'
-import { Box, Typography, Grid, Button } from '@mui/material'
-import { OrderingType } from '@/types/enum'
-
-const list: OrderingListItem[] = [
-    {
-        id: 1,
-        productName: 'Lemon Tea',
-        unitPrice: 2.5,
-        quantity: 2,
-        type: OrderingType.Drink,
-        totalPrice: 5,
-        link: 'www.example.com',
-        createdBy: 'John Doe',
-        updatedBy: 'John Doe',
-    },
-    {
-        id: 2,
-        productName: 'Potato Chip',
-        unitPrice: 10,
-        quantity: 1,
-        type: OrderingType.Food,
-        totalPrice: 10,
-        link: 'www.example.com',
-        createdBy: 'John Doe',
-        updatedBy: 'John Doe',
-    },
-]
-
-const itemList = [
-    ...list,
-    ...list,
-    ...list,
-    ...list,
-    ...list,
-    ...list,
-    ...list,
-    ...list,
-    ...list,
-    ...list,
-    ...list,
-]
+import { Box, Grid } from '@mui/material'
+import { convertOrderingToOrderingListItem_List } from '@/utils/display'
+import toastHelper from '@/utils/toast'
 
 const MonthlyDashboard = () => {
     const params = useParams()
+
+    const [itemList, setItemList] = useState<OrderingListItem[]>([])
     const [locked, setLocked] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(false)
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
 
-    const selectedMonth: string = params ? params.selectedMonth as string : ''
+    const selectedMonth: string = params ? (params.selectedMonth as string) : ''
+
+    const refetch = async () => {
+        setLoading(true)
+        try {
+            const result = await fetch(
+                `/api/ordering/list?selectedMonth=${selectedMonth}`
+            )
+            const data = await result.json()
+            const resultList = convertOrderingToOrderingListItem_List(
+                data.list as Ordering[]
+            )
+            setItemList(resultList)
+        } catch (err: Error | unknown) {
+            if (err instanceof Error) {
+                toastHelper.error(err.message)
+            }
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        if (!selectedMonth) return
+        refetch()
+    }, [selectedMonth])
 
     const onItemAddHandler = () => {
         setDialogOpen(true)
     }
 
     const onItemCreatedHandler = () => {
-        console.log('created')
+        refetch()
     }
 
     const onItemEditHandler = (item: OrderingListItem) => {
@@ -79,16 +71,23 @@ const MonthlyDashboard = () => {
                     <DashboardTitle />
                 </Grid>
                 <Grid item xs={12} pb={2}>
-                    <DashboardActionList onAddHandler={onItemAddHandler} />
+                    <DashboardActionList
+                        onAddHandler={onItemAddHandler}
+                        loading={locked || loading}
+                    />
                 </Grid>
                 <Grid item xs={12}>
                     <OrderingTable
                         itemList={itemList}
-                        disabled={locked}
+                        disabled={locked || loading}
                         onItemEditHandler={onItemEditHandler}
                     />
                 </Grid>
+                <Grid item xs={12}>
+                    <TotalPriceOverlay itemList={itemList} />
+                </Grid>
             </Grid>
+
             <OrderingDialog
                 open={dialogOpen}
                 selectedMonth={selectedMonth}

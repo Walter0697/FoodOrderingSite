@@ -85,5 +85,9 @@ export default async function handler(
                 message: 'Successfully added to cart',
             })
         }
+        default: {
+            res.setHeader('Allow', ['POST'])
+            res.status(405).end(`Method ${requestMethod} Not Allowed`)
+        }
     }
 }

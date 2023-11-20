@@ -18,7 +18,8 @@ export default async function handler(
             return res.status(200).json({ success: true })
         }
         default: {
-            return res.status(405).json({ success: false })
+            res.setHeader('Allow', ['POST'])
+            res.status(405).end(`Method ${requestMethod} Not Allowed`)
         }
     }
 }

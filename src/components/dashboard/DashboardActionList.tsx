@@ -1,6 +1,7 @@
 'use client'
 
-import { Grid, Button } from '@mui/material'
+import { Grid } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
 
 import { IoMdAdd } from 'react-icons/io'
 
@@ -8,20 +9,25 @@ import { block } from 'million/react'
 
 type DashboardActionListProps = {
     onAddHandler: () => void
+    loading: boolean
 }
 
-function DashboardActionList({ onAddHandler }: DashboardActionListProps) {
+function DashboardActionList({
+    onAddHandler,
+    loading,
+}: DashboardActionListProps) {
     return (
         <Grid container spacing={0}>
             <Grid item xs={12}>
-                <Button
+                <LoadingButton
                     variant="contained"
                     color="primary"
+                    loading={loading}
                     startIcon={<IoMdAdd />}
                     onClick={onAddHandler}
                 >
                     Add Order
-                </Button>
+                </LoadingButton>
             </Grid>
         </Grid>
     )

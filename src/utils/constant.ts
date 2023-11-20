@@ -9,3 +9,7 @@ export const ServerURLPrefix = {
 export const StaticPath = {
     HomePage: '/login',
 }
+
+export const ConstantValue = {
+    TotalBudget: 2000,
+}

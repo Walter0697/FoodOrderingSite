@@ -1,7 +1,6 @@
-import { ServerURLPrefix } from './constant'
-
+const ChingKeeAcceptance = '35261646.com.hk/products/'
 export const checkURLValid = (url: string) => {
-    if (url.startsWith(ServerURLPrefix.ChingKee)) {
+    if (url.includes(ChingKeeAcceptance)) {
         return true
     }
     return false
