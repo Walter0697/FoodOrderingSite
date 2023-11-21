@@ -116,6 +116,13 @@ function OrderingTable({
     const [loading, setLoading] = useState<boolean>(false)
     const [currentSorting, setCurrentSorting] = useState<SortOrder | null>(null)
 
+    const getSortedList = () => {
+        return itemList.toSorted((a, b) => {
+            return a.id - b.id
+        })
+    }
+    const sortedList = getSortedList()
+
     const onCurrentSortingChangeHandler = (column: string) => {
         if (currentSorting) {
             if (currentSorting.orderBy === column) {
@@ -184,7 +191,7 @@ function OrderingTable({
                         setCurrentSorting={onCurrentSortingChangeHandler}
                     />
                     <TableBody>
-                        {itemList.map((item, index) => (
+                        {sortedList.map((item, index) => (
                             <TableRow
                                 hover
                                 key={`item-${index}`}

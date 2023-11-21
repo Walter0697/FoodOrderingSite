@@ -1,8 +1,9 @@
 import { Ordering } from '@prisma/client'
-import { OrderingType } from '@/types/enum'
+import { OrderingType, SocketActionType } from '@/types/enum'
 import { OrderingListItem } from '@/types/display/ordering'
 import { DetailedOrdering } from '@/types/model'
 import { ServerURLPrefix } from './constant'
+import { SocketActionData } from '@/types/socket'
 
 export const getDisplayTextForOrderingType = (orderingType: OrderingType) => {
     switch (orderingType) {
@@ -41,6 +42,7 @@ export const convertOrderingToOrderingListItem = (
     return {
         id: ordering.id ?? -1,
         productName: ordering.product?.name ?? '',
+        productIdentifier: ordering.product?.identifier ?? '',
         unitPrice: ordering.price ?? 0,
         quantity: ordering.quantity ?? 0,
         type: ordering.category as OrderingType,
@@ -59,4 +61,28 @@ export const convertOrderingToOrderingListItem_List = (
         list.push(convertOrderingToOrderingListItem(orderings[i]))
     }
     return list
+}
+
+export const shouldPerformAction = (
+    data: SocketActionData,
+    selectedMonth: string,
+    currentUserId: number
+): boolean => {
+    if (data.selectedMonth !== selectedMonth) return false
+    if (data.userId === currentUserId) return false
+    return true
+}
+
+export const convertSocketActionIntoToastMessage = (data: SocketActionData) => {
+    switch (data.actionType) {
+        case SocketActionType.Create: {
+            return `${data.userDisplayName} added ${data.quantity} of "${data.productName}" to the cart! (${data.type})`
+        }
+        case SocketActionType.Update: {
+            return `${data.userDisplayName} changed the quatity of "${data.productName}" to ${data.quantity}`
+        }
+        case SocketActionType.Remove: {
+            return `${data.userDisplayName} removed "${data.productName}"`
+        }
+    }
 }

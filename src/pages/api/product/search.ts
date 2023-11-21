@@ -58,6 +58,7 @@ export default async function handler(
                 data: {
                     productName: product.name,
                     productId: product.id,
+                    productIdentifier: product.identifier,
                     productPrice: productInformation.productPrice,
                 },
             })

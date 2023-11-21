@@ -7,4 +7,5 @@ export type ScraperProductType = {
     productName: string
     productId: number
     productPrice: number
+    productIdentifier: string
 }

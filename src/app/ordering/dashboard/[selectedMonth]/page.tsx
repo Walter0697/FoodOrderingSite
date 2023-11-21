@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import useUserData from '@/stores/useUserData'
+import io, { Socket } from 'Socket.IO-client'
 
 import { Ordering } from '@prisma/client'
 
@@ -10,16 +12,27 @@ import DashboardActionList from '@/components/dashboard/DashboardActionList'
 import OrderingTable from '@/components/dashboard/OrderingTable'
 import OrderingDialog from '@/components/dashboard/OrderingDialog'
 import TotalPriceOverlay from '@/components/dashboard/TotalPriceOverlay'
+import EditOrderingDialog from '@/components/dashboard/EditOrderingDialog'
 
+import { SocketActionData } from '@/types/socket'
 import { OrderingListItem } from '@/types/display/ordering'
 
 import { Box, Grid } from '@mui/material'
-import { convertOrderingToOrderingListItem_List } from '@/utils/display'
+import {
+    convertOrderingToOrderingListItem_List,
+    convertSocketActionIntoToastMessage,
+    shouldPerformAction,
+} from '@/utils/display'
+import { performActionOnList } from '@/utils/list'
 import toastHelper from '@/utils/toast'
-import EditOrderingDialog from '@/components/dashboard/EditOrderingDialog'
+import { SocketActionType } from '@/types/enum'
+
+let socket: Socket | null = null
+let itemListStored: OrderingListItem[] = []
 
 const MonthlyDashboard = () => {
     const params = useParams()
+    const userData = useUserData((state) => state.userData)
 
     const [itemList, setItemList] = useState<OrderingListItem[]>([])
     const [locked, setLocked] = useState<boolean>(false)
@@ -32,6 +45,43 @@ const MonthlyDashboard = () => {
 
     const selectedMonth: string = params ? (params.selectedMonth as string) : ''
 
+    const setCurrentItemList = (list: OrderingListItem[]) => {
+        setItemList(list)
+        itemListStored = list
+    }
+
+    useEffect(() => {
+        if (!userData) return
+        socketInitializer()
+    }, [userData])
+
+    const socketInitializer = async () => {
+        await fetch('/api/socket')
+        socket = io()
+
+        socket.on('connect', () => {
+            console.log('socket connected to server')
+            if (socket) {
+                socket.emit('initialze', userData)
+            }
+        })
+
+        socket.on('action', (data: SocketActionData) => {
+            const shouldUpdate = shouldPerformAction(
+                data,
+                selectedMonth,
+                userData?.id ?? -1
+            )
+            if (!shouldUpdate) return
+            // show the toast message
+            const toastMessage = convertSocketActionIntoToastMessage(data)
+            toastHelper.cartUpdate(toastMessage)
+
+            const newList = performActionOnList(itemListStored, data)
+            setCurrentItemList(newList)
+        })
+    }
+
     const refetch = async () => {
         setLoading(true)
         try {
@@ -42,7 +92,7 @@ const MonthlyDashboard = () => {
             const resultList = convertOrderingToOrderingListItem_List(
                 data.list as Ordering[]
             )
-            setItemList(resultList)
+            setCurrentItemList(resultList)
         } catch (err: Error | unknown) {
             if (err instanceof Error) {
                 toastHelper.error(err.message)
@@ -61,15 +111,29 @@ const MonthlyDashboard = () => {
         setDialogOpen(true)
     }
 
-    const onItemCreatedHandler = () => {
+    const onItemCreatedHandler = (item: Partial<SocketActionData>) => {
+        if (socket) {
+            socket.emit('performed', item)
+        }
         refetch()
     }
 
-    const onItemEditedHandler = () => {
+    const onItemEditedHandler = (item: Partial<SocketActionData>) => {
+        if (socket) {
+            socket.emit('performed', item)
+        }
         refetch()
     }
 
     const onItemRemoveHandler = (item: OrderingListItem) => {
+        if (socket) {
+            socket.emit('performed', {
+                actionType: SocketActionType.Remove,
+                productName: item.productName,
+                selectedMonth: selectedMonth,
+                orderId: item.id,
+            })
+        }
         refetch()
     }
 
@@ -111,6 +175,7 @@ const MonthlyDashboard = () => {
             <EditOrderingDialog
                 open={edittingItem !== null}
                 item={edittingItem ?? undefined}
+                selectedMonth={selectedMonth}
                 onItemEditedHandler={onItemEditedHandler}
                 handleClose={() => setEdittingItem(null)}
             />

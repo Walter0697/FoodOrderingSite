@@ -6,6 +6,7 @@ import orderingService from '@/services/ordering'
 import { DatabaseErrorObj } from '@/types/common'
 
 import { userMiddleware } from '@/middlewares/user'
+import { Ordering } from '@prisma/client'
 
 type AddToCartRequestBody = {
     productId: number
@@ -20,6 +21,7 @@ type ResponseData = {
     success?: boolean
     message?: string
     showConfirm?: boolean
+    orderId?: number
 }
 
 export default async function handler(
@@ -78,11 +80,16 @@ export default async function handler(
                 })
             }
 
-            // TODO: send to socket here
+            let orderId: number = -1
+            if (upsertedOrder.hasOwnProperty('id')) {
+                const currentOrder = upsertedOrder as Ordering
+                orderId = currentOrder.id
+            }
 
             return res.status(200).json({
                 success: true,
                 message: 'Successfully added to cart',
+                orderId: orderId,
             })
         }
         default: {

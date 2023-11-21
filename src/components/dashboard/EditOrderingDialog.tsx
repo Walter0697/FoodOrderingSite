@@ -9,20 +9,23 @@ import OrderingTypeChoice from '@/components/common/OrderingTypeChoice'
 
 import { Typography, Grid, Stack, Box } from '@mui/material'
 
-import { OrderingType } from '@/types/enum'
+import { OrderingType, SocketActionType } from '@/types/enum'
 import { OrderingListItem } from '@/types/display/ordering'
+import { SocketActionData } from '@/types/socket'
 
 import toastHelper from '@/utils/toast'
 
 type EditOrderingDialogProps = {
     open: boolean
     item?: OrderingListItem
-    onItemEditedHandler: () => void
+    selectedMonth: string
+    onItemEditedHandler: (item: Partial<SocketActionData>) => void
     handleClose: () => void
 }
 
 function EditOrderingDialog({
     open,
+    selectedMonth,
     item,
     onItemEditedHandler,
     handleClose,
@@ -55,7 +58,16 @@ function EditOrderingDialog({
             const data = await res.json()
             if (data.success) {
                 toastHelper.success('Item Edited')
-                onItemEditedHandler()
+                onItemEditedHandler({
+                    actionType: SocketActionType.Update,
+                    productName: item?.productName,
+                    productIdentifier: item?.productIdentifier,
+                    quantity: unit,
+                    unitPrice: item?.unitPrice,
+                    selectedMonth: selectedMonth,
+                    orderId: item?.id,
+                    type: productType,
+                })
                 handleClose()
             } else {
                 toastHelper.error(data.message)

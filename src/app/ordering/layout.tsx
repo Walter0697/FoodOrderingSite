@@ -38,6 +38,7 @@ async function getUserSessionFromServer(): Promise<UserSessionData | null> {
         username: user.username,
         displayname: user.displayname,
         rank: user.rank,
+        id: user.id,
     }
 }
 

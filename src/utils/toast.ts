@@ -12,6 +12,17 @@ const defaultToastConfig: Partial<ToastOptions> = {
     theme: 'light',
 }
 
+const cartUpdateToastConfig: Partial<ToastOptions> = {
+    position: 'top-right',
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: 'light',
+}
+
 const success = (message: string) => {
     toast.success(message, defaultToastConfig)
 }
@@ -20,9 +31,14 @@ const error = (message: string) => {
     toast.error(message, defaultToastConfig)
 }
 
+const cartUpdate = (message: string) => {
+    toast(`🛒 ${message}`)
+}
+
 const toastHelper = {
     success,
     error,
+    cartUpdate,
 }
 
 export default toastHelper

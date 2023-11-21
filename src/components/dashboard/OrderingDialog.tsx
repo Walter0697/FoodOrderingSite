@@ -11,7 +11,8 @@ import { Typography, Grid, TextField, Stack, Box } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 
 import { ScraperProductType } from '@/types/scraper'
-import { OrderingType } from '@/types/enum'
+import { OrderingType, SocketActionType } from '@/types/enum'
+import { SocketActionData } from '@/types/socket'
 
 import { checkURLValid } from '@/utils/orders'
 import { StaticPath } from '@/utils/constant'
@@ -20,7 +21,7 @@ import toastHelper from '@/utils/toast'
 type OrderingDialogProps = {
     open: boolean
     selectedMonth: string
-    onItemCreatedHandler: () => void
+    onItemCreatedHandler: (item: Partial<SocketActionData>) => void
     handleClose: () => void
 }
 
@@ -134,7 +135,20 @@ function OrderingDialog({
             }
 
             toastHelper.success('Item added')
-            onItemCreatedHandler()
+
+            onItemCreatedHandler({
+                actionType: overrideQuantity
+                    ? SocketActionType.Update
+                    : SocketActionType.Create,
+                productName: productData?.productName,
+                productIdentifier: productData?.productIdentifier,
+                quantity: unit,
+                unitPrice: productData?.productPrice,
+                selectedMonth: selectedMonth,
+                orderId: result.orderId,
+                type: overrideQuantity ? undefined : productType,
+            })
+
             handleClose()
         } catch (err: Error | unknown) {
             if (err instanceof Error) {
