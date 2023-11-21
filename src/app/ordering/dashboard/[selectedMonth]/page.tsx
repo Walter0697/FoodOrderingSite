@@ -280,6 +280,7 @@ const MonthlyDashboard = () => {
                             onOrderCompleteClickHandler
                         }
                         expectedDeliveryDate={expectedDeliveryDate}
+                        reason={reason}
                         loading={loading}
                         locked={locked}
                         disabled={!allowEdit}

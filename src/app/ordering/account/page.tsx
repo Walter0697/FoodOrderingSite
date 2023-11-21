@@ -23,7 +23,7 @@ function Dashboard() {
                 variant={'contained'}
                 onClick={() => router.push('/ordering/dashboard')}
                 sx={{
-                    width: '30vw',
+                    width: '50vw',
                     height: '100px',
                     fontSize: '30px',
                     textTransform: 'none',

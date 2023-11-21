@@ -2,7 +2,7 @@
 
 import useUserData from '@/stores/useUserData'
 
-import { Grid, Typography } from '@mui/material'
+import { Grid, Typography, Tooltip, Button } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 
 import { MonthlyOrderStatus } from '@/types/enum'
@@ -21,6 +21,7 @@ type DashboardActionListProps = {
     disabled: boolean
     locked: boolean
     expectedDeliveryDate: string
+    reason: string
 }
 
 function DashboardActionList({
@@ -30,8 +31,9 @@ function DashboardActionList({
     onOrderCompleteClickHandler,
     loading,
     locked,
-    expectedDeliveryDate,
     disabled,
+    expectedDeliveryDate,
+    reason,
 }: DashboardActionListProps) {
     const userData = useUserData((state) => state.userData)
     const isAdmin = userData ? userData.rank === 'admin' : false
@@ -65,11 +67,38 @@ function DashboardActionList({
                 </Grid>
             )}
             {status === MonthlyOrderStatus.Completed && (
-                <Grid item xs={12}>
-                    <Typography variant={'h6'}>
-                        Ordered! Expected Delivery Date: {expectedDeliveryDate}
-                    </Typography>
-                </Grid>
+                <>
+                    <Grid item xs={8}>
+                        <Typography variant={'h6'}>
+                            Ordered! Expected Delivery Date:{' '}
+                            {expectedDeliveryDate}
+                        </Typography>
+                    </Grid>
+                    <Grid
+                        item
+                        xs={4}
+                        display={'flex'}
+                        justifyContent={'flex-end'}
+                    >
+                        <Tooltip
+                            title={
+                                <>
+                                    {reason.split('\n').map((row, index) => (
+                                        <Typography
+                                            variant={'h6'}
+                                            key={`${index}-reason`}
+                                        >
+                                            {row}
+                                        </Typography>
+                                    ))}
+                                </>
+                            }
+                            placement="bottom-start"
+                        >
+                            <Button variant={'contained'}>Notes</Button>
+                        </Tooltip>
+                    </Grid>
+                </>
             )}
             {isAdmin && status === MonthlyOrderStatus.Pending && (
                 <Grid item xs={9} display={'flex'} justifyContent={'flex-end'}>
