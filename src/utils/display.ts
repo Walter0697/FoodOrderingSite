@@ -1,9 +1,17 @@
 import { Ordering } from '@prisma/client'
-import { OrderingType, SocketActionType } from '@/types/enum'
+import {
+    MonthlyOrderStatus,
+    OrderingType,
+    SocketActionType,
+} from '@/types/enum'
 import { OrderingListItem } from '@/types/display/ordering'
 import { DetailedOrdering } from '@/types/model'
 import { ServerURLPrefix } from './constant'
-import { SocketActionData } from '@/types/socket'
+import {
+    SocketActionData,
+    SocketInformation,
+    SocketStatusData,
+} from '@/types/socket'
 
 export const getDisplayTextForOrderingType = (orderingType: OrderingType) => {
     switch (orderingType) {
@@ -64,7 +72,7 @@ export const convertOrderingToOrderingListItem_List = (
 }
 
 export const shouldPerformAction = (
-    data: SocketActionData,
+    data: SocketInformation,
     selectedMonth: string,
     currentUserId: number
 ): boolean => {
@@ -83,6 +91,20 @@ export const convertSocketActionIntoToastMessage = (data: SocketActionData) => {
         }
         case SocketActionType.Remove: {
             return `${data.userDisplayName} removed "${data.productName}"`
+        }
+    }
+}
+
+export const convertSocketStatusIntoToastMessage = (data: SocketStatusData) => {
+    switch (data.status) {
+        case MonthlyOrderStatus.Pending: {
+            return `${data.userDisplayName} unlocked this page! You can order again!`
+        }
+        case MonthlyOrderStatus.Ordering: {
+            return `${data.userDisplayName} locked this page! Please contact him/her if you want to order!`
+        }
+        case MonthlyOrderStatus.Completed: {
+            return `${data.userDisplayName} completed this order! Let's wait for the snack to arrive!`
         }
     }
 }

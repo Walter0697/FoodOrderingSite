@@ -8,6 +8,7 @@ export const ServerURLPrefix = {
 
 export const StaticPath = {
     HomePage: '/login',
+    LoginedHomePage: '/ordering/account',
 }
 
 export const ConstantValue = {

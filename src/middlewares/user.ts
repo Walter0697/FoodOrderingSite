@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { User } from '@prisma/client'
 import { getCookie } from 'cookies-next'
 

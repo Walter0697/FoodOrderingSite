@@ -1,6 +1,13 @@
 import { Server } from 'socket.io'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { NextApiResponseWithSocket, SocketActionData } from '@/types/socket'
+import {
+    NextApiResponseWithSocket,
+    SocketActionData,
+    SocketCompleteData,
+    SocketStatusData,
+} from '@/types/socket'
+
+import userService from '@/services/user'
 
 import { userMiddleware } from '@/middlewares/user'
 import { SocketActionType } from '@/types/enum'
@@ -73,6 +80,59 @@ export default async function SocketHandler(
                     }
                 }
             })
+
+            socket.on('setstatus', async (data: Partial<SocketStatusData>) => {
+                const currentUserData = SocketUserMap.get(socket.id)
+                if (currentUserData && currentUserData.id) {
+                    const currentUser = await userService.getUserById(
+                        currentUserData.id
+                    )
+                    if (!currentUser) return
+                    if (currentUser.rank !== 'admin') return
+
+                    for (const currentSocket of io.sockets.sockets.values()) {
+                        if (currentSocket.id !== socket.id) {
+                            currentSocket.emit('status', {
+                                status: data.status,
+                                selectedMonth: data.selectedMonth,
+                                userId: SocketUserMap.get(socket.id)?.id,
+                                userDisplayName: SocketUserMap.get(socket.id)
+                                    ?.displayname,
+                            })
+                        }
+                    }
+                }
+            })
+
+            socket.on(
+                'setcomplete',
+                async (data: Partial<SocketCompleteData>) => {
+                    const currentUserData = SocketUserMap.get(socket.id)
+                    if (currentUserData && currentUserData.id) {
+                        const currentUser = await userService.getUserById(
+                            currentUserData.id
+                        )
+                        if (!currentUser) return
+                        if (currentUser.rank !== 'admin') return
+                        
+                        for (const currentSocket of io.sockets.sockets.values()) {
+                            if (currentSocket.id !== socket.id) {
+                                currentSocket.emit('complete', {
+                                    reason: data.reason,
+                                    actualPrice: data.actualPrice,
+                                    expectedDeliveryDate:
+                                        data.expectedDeliveryDate,
+                                    selectedMonth: data.selectedMonth,
+                                    userId: SocketUserMap.get(socket.id)?.id,
+                                    userDisplayName: SocketUserMap.get(
+                                        socket.id
+                                    )?.displayname,
+                                })
+                            }
+                        }
+                    }
+                }
+            )
 
             // Clean up the socket on disconnect
             socket.on('disconnect', () => {

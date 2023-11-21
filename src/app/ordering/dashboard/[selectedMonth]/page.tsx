@@ -5,23 +5,30 @@ import { useParams } from 'next/navigation'
 import useUserData from '@/stores/useUserData'
 import io, { Socket } from 'Socket.IO-client'
 
-import { Ordering } from '@prisma/client'
+import { MonthlyOrder, Ordering } from '@prisma/client'
 
 import DashboardTitle from '@/components/dashboard/DashboardTitle'
 import DashboardActionList from '@/components/dashboard/DashboardActionList'
 import OrderingTable from '@/components/dashboard/OrderingTable'
-import OrderingDialog from '@/components/dashboard/OrderingDialog'
-import TotalPriceOverlay from '@/components/dashboard/TotalPriceOverlay'
-import EditOrderingDialog from '@/components/dashboard/EditOrderingDialog'
+import TotalPriceSummary from '@/components/dashboard/TotalPriceSummary'
 
-import { SocketActionData } from '@/types/socket'
+import OrderingDialog from '@/components/dashboard/OrderingDialog'
+import EditOrderingDialog from '@/components/dashboard/EditOrderingDialog'
+import CompleteOrderDialog from '@/components/dashboard/CompleteOrderDialog'
+
+import {
+    SocketActionData,
+    SocketCompleteData,
+    SocketStatusData,
+} from '@/types/socket'
 import { OrderingListItem } from '@/types/display/ordering'
-import { SocketActionType } from '@/types/enum'
+import { MonthlyOrderStatus, SocketActionType } from '@/types/enum'
 
 import { Box, Grid } from '@mui/material'
 import {
     convertOrderingToOrderingListItem_List,
     convertSocketActionIntoToastMessage,
+    convertSocketStatusIntoToastMessage,
     shouldPerformAction,
 } from '@/utils/display'
 import { performActionOnList } from '@/utils/list'
@@ -36,13 +43,24 @@ const MonthlyDashboard = () => {
     const userData = useUserData((state) => state.userData)
 
     const [itemList, setItemList] = useState<OrderingListItem[]>([])
-    const [locked, setLocked] = useState<boolean>(false)
+    const [monthlyStatus, setMonthlyStatus] = useState<MonthlyOrderStatus>(
+        MonthlyOrderStatus.Pending
+    )
+    const [expectedDeliveryDate, setExpectedDeliveryDate] = useState<string>('')
+    const [actualPrice, setActualPrice] = useState<number | null>(null)
+    const [reason, setReason] = useState<string>('')
+
     const [loading, setLoading] = useState<boolean>(false)
 
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
     const [edittingItem, setEdittingItem] = useState<OrderingListItem | null>(
         null
     )
+    const [openComplete, setOpenComplete] = useState<boolean>(false)
+
+    const locked =
+        monthlyStatus === MonthlyOrderStatus.Completed ||
+        monthlyStatus === MonthlyOrderStatus.Ordering
 
     const selectedMonth: string = params ? (params.selectedMonth as string) : ''
     const allowEdit = monthAllowEdit(selectedMonth)
@@ -70,7 +88,10 @@ const MonthlyDashboard = () => {
 
         socket.on('action', (data: SocketActionData) => {
             const shouldUpdate = shouldPerformAction(
-                data,
+                {
+                    selectedMonth: data.selectedMonth,
+                    userId: data.userId,
+                },
                 selectedMonth,
                 userData?.id ?? -1
             )
@@ -81,6 +102,48 @@ const MonthlyDashboard = () => {
 
             const newList = performActionOnList(itemListStored, data)
             setCurrentItemList(newList)
+        })
+
+        socket.on('status', (status: SocketStatusData) => {
+            const shouldUpdate = shouldPerformAction(
+                {
+                    selectedMonth: status.selectedMonth,
+                    userId: status.userId,
+                },
+                selectedMonth,
+                userData?.id ?? -1
+            )
+            if (!shouldUpdate) return
+
+            if (status.status !== MonthlyOrderStatus.Pending) {
+                setEdittingItem(null)
+                setDialogOpen(false)
+            }
+            const toastMessage = convertSocketStatusIntoToastMessage(status)
+            toastHelper.cartUpdate(toastMessage)
+            setMonthlyStatus(status.status)
+        })
+
+        socket.on('complete', (data: SocketCompleteData) => {
+            const shouldUpdate = shouldPerformAction(
+                {
+                    selectedMonth: data.selectedMonth,
+                    userId: data.userId,
+                },
+                selectedMonth,
+                userData?.id ?? -1
+            )
+            if (!shouldUpdate) return
+
+            setEdittingItem(null)
+            setDialogOpen(false)
+            setOpenComplete(false)
+            setMonthlyStatus(MonthlyOrderStatus.Completed)
+            toastHelper.cartUpdate('Order completed!')
+
+            setActualPrice(data.actualPrice)
+            setReason(data.reason)
+            setExpectedDeliveryDate(data.expectedDeliveryDate)
         })
     }
 
@@ -95,6 +158,17 @@ const MonthlyDashboard = () => {
                 data.list as Ordering[]
             )
             setCurrentItemList(resultList)
+
+            const monthlyOrder = data.orderStatus as MonthlyOrder
+            setMonthlyStatus(
+                (monthlyOrder.status as MonthlyOrderStatus) ??
+                    MonthlyOrderStatus.Pending
+            )
+            if (monthlyOrder.status === MonthlyOrderStatus.Completed) {
+                setExpectedDeliveryDate(monthlyOrder.expectedDeliveryDate ?? '')
+                setActualPrice(monthlyOrder.actualPrice ?? null)
+                setReason(monthlyOrder.reason ?? '')
+            }
         } catch (err: Error | unknown) {
             if (err instanceof Error) {
                 toastHelper.error(err.message)
@@ -108,6 +182,42 @@ const MonthlyDashboard = () => {
         if (!selectedMonth) return
         refetch()
     }, [selectedMonth])
+
+    const onSetStatusHandler = async (status: MonthlyOrderStatus) => {
+        setLoading(true)
+
+        try {
+            const response = await fetch('/api/monthly/status', {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    selectedMonth: selectedMonth,
+                    status: status,
+                }),
+            })
+            const data = await response.json()
+            if (data.success) {
+                setMonthlyStatus(status)
+                if (socket) {
+                    socket.emit('setstatus', {
+                        selectedMonth: selectedMonth,
+                        status: status,
+                    })
+                }
+            } else {
+                toastHelper.error(data.message)
+            }
+        } catch (err: Error | unknown) {
+            if (err instanceof Error) {
+                toastHelper.error(err.message)
+            }
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const onOrderCompleteClickHandler = () => {
+        setOpenComplete(true)
+    }
 
     const onItemAddHandler = () => {
         setDialogOpen(true)
@@ -139,6 +249,18 @@ const MonthlyDashboard = () => {
         refetch()
     }
 
+    const onCompleted = (item: MonthlyOrder) => {
+        if (socket) {
+            socket.emit('setcomplete', {
+                selectedMonth: selectedMonth,
+                reason: item.reason,
+                actualPrice: item.actualPrice,
+                expectedDeliveryDate: item.expectedDeliveryDate,
+            })
+        }
+        refetch()
+    }
+
     const onItemEditHandler = (item: OrderingListItem) => {
         setEdittingItem(item)
     }
@@ -152,7 +274,14 @@ const MonthlyDashboard = () => {
                 <Grid item xs={12} pb={2}>
                     <DashboardActionList
                         onAddHandler={onItemAddHandler}
-                        loading={locked || loading}
+                        status={monthlyStatus}
+                        onSetStatusHandler={onSetStatusHandler}
+                        onOrderCompleteClickHandler={
+                            onOrderCompleteClickHandler
+                        }
+                        expectedDeliveryDate={expectedDeliveryDate}
+                        loading={loading}
+                        locked={locked}
                         disabled={!allowEdit}
                     />
                 </Grid>
@@ -165,7 +294,10 @@ const MonthlyDashboard = () => {
                     />
                 </Grid>
                 <Grid item xs={12}>
-                    <TotalPriceOverlay itemList={itemList} />
+                    <TotalPriceSummary
+                        itemList={itemList}
+                        actualPrice={actualPrice}
+                    />
                 </Grid>
             </Grid>
 
@@ -181,6 +313,13 @@ const MonthlyDashboard = () => {
                 selectedMonth={selectedMonth}
                 onItemEditedHandler={onItemEditedHandler}
                 handleClose={() => setEdittingItem(null)}
+            />
+            <CompleteOrderDialog
+                open={openComplete}
+                selectedMonth={selectedMonth}
+                onCompleted={onCompleted}
+                list={itemList}
+                handleClose={() => setOpenComplete(false)}
             />
         </Box>
     )

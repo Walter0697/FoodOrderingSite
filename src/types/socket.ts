@@ -2,7 +2,7 @@ import type { Server as HTTPServer } from 'http'
 import type { NextApiResponse } from 'next'
 import type { Socket as NetSocket } from 'net'
 import type { Server as IOServer } from 'socket.io'
-import { SocketActionType } from './enum'
+import { MonthlyOrderStatus, SocketActionType } from './enum'
 
 export interface SocketServer extends HTTPServer {
     io?: IOServer | undefined
@@ -42,3 +42,24 @@ export type SocketActionData = {
     orderId: number
     selectedMonth: string
 } & (SocketCreateAction | SocketUpdateAction | SocketDeleteAction)
+
+export type SocketStatusData = {
+    status: MonthlyOrderStatus
+    selectedMonth: string
+    userId: number
+    userDisplayName: string
+}
+
+export type SocketCompleteData = {
+    userId: number
+    userDisplayName: string
+    selectedMonth: string
+    reason: string
+    actualPrice: number
+    expectedDeliveryDate: string
+}
+
+export type SocketInformation = {
+    selectedMonth: string
+    userId: number
+}

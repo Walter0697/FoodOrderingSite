@@ -10,17 +10,21 @@ import { ConstantValue } from '@/utils/constant'
 import { FaBowlFood } from 'react-icons/fa6'
 import { MdLocalDrink } from 'react-icons/md'
 import { IoIosPricetags } from 'react-icons/io'
-import { FaBalanceScale } from 'react-icons/fa'
+import { FaBalanceScale, FaMoneyBillWave } from 'react-icons/fa'
 
 import { block } from 'million/react'
 
-type TotalPriceOverlayProps = {
+type TotalPriceSummaryProps = {
     itemList: OrderingListItem[]
+    actualPrice?: number | null | undefined
 }
 
-function TotalPriceOverlay({ itemList }: TotalPriceOverlayProps) {
+function TotalPriceSummary({ itemList, actualPrice }: TotalPriceSummaryProps) {
     const foodList = itemList.filter((s) => s.type === OrderingType.Food)
     const drinkList = itemList.filter((s) => s.type === OrderingType.Drink)
+    const foodCount = foodList.length
+    const drinkCount = drinkList.length
+    const totalCount = foodCount + drinkCount
     const foodTotal = foodList.reduce(
         (acc, cur) => acc + cur.unitPrice * cur.quantity,
         0
@@ -48,7 +52,7 @@ function TotalPriceOverlay({ itemList }: TotalPriceOverlayProps) {
                         color: 'black',
                         boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.5)',
                         height: 'auto',
-                        width: '300px',
+                        width: '400px',
                     }}
                 >
                     <Grid container spacing={1} p={2}>
@@ -60,12 +64,15 @@ function TotalPriceOverlay({ itemList }: TotalPriceOverlayProps) {
                             }}
                         >
                             <Grid container spacing={0}>
-                                <Grid item xs={6}>
+                                <Grid item xs={4}>
                                     <FaBowlFood /> Food Total:{' '}
+                                </Grid>
+                                <Grid item xs={3}>
+                                    {foodCount} Item(s)
                                 </Grid>
                                 <Grid
                                     item
-                                    xs={6}
+                                    xs={5}
                                     display={'flex'}
                                     justifyContent={'flex-end'}
                                 >
@@ -81,12 +88,15 @@ function TotalPriceOverlay({ itemList }: TotalPriceOverlayProps) {
                             }}
                         >
                             <Grid container spacing={0}>
-                                <Grid item xs={6}>
+                                <Grid item xs={4}>
                                     <MdLocalDrink /> Drink Total:{' '}
+                                </Grid>
+                                <Grid item xs={3}>
+                                    {drinkCount} Item(s)
                                 </Grid>
                                 <Grid
                                     item
-                                    xs={6}
+                                    xs={5}
                                     display={'flex'}
                                     justifyContent={'flex-end'}
                                 >
@@ -102,19 +112,55 @@ function TotalPriceOverlay({ itemList }: TotalPriceOverlayProps) {
                             }}
                         >
                             <Grid container spacing={0}>
-                                <Grid item xs={6}>
+                                <Grid item xs={4}>
                                     <IoIosPricetags /> Total:{' '}
+                                </Grid>
+                                <Grid item xs={3}>
+                                    {totalCount} Item(s)
                                 </Grid>
                                 <Grid
                                     item
-                                    xs={6}
+                                    xs={5}
                                     display={'flex'}
                                     justifyContent={'flex-end'}
+                                    sx={{
+                                        textDecoration:
+                                            actualPrice !== undefined &&
+                                            actualPrice !== null &&
+                                            actualPrice !== total
+                                                ? 'line-through'
+                                                : 'none',
+                                    }}
                                 >
                                     $ {total}
                                 </Grid>
                             </Grid>
                         </Grid>
+                        {actualPrice !== undefined &&
+                            actualPrice !== null &&
+                            actualPrice !== total && (
+                                <Grid
+                                    item
+                                    xs={12}
+                                    sx={{
+                                        borderBottom: '1px solid gray',
+                                    }}
+                                >
+                                    <Grid container spacing={0}>
+                                        <Grid item xs={6}>
+                                            <FaMoneyBillWave /> Actual Price:{' '}
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            xs={6}
+                                            display={'flex'}
+                                            justifyContent={'flex-end'}
+                                        >
+                                            $ {actualPrice}
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            )}
                         <Grid
                             item
                             xs={12}
@@ -147,5 +193,5 @@ function TotalPriceOverlay({ itemList }: TotalPriceOverlayProps) {
     )
 }
 
-const TotalPriceOverlayBlock = block(TotalPriceOverlay)
-export default TotalPriceOverlayBlock
+const TotalPriceSummaryBlock = block(TotalPriceSummary)
+export default TotalPriceSummaryBlock

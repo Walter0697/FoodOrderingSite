@@ -6,5 +6,11 @@ export enum OrderingType {
 export enum SocketActionType {
     Create = 'Create',
     Update = 'Update',
-    Remove = 'Remove'
+    Remove = 'Remove',
+}
+
+export enum MonthlyOrderStatus {
+    Pending = 'pending',
+    Ordering = 'ordering',
+    Completed = 'completed',
 }

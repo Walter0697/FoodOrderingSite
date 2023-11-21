@@ -4,7 +4,8 @@ import orderingService from '@/services/ordering'
 
 import { userMiddleware } from '@/middlewares/user'
 
-import { Ordering } from '@prisma/client'
+import { MonthlyOrder, Ordering } from '@prisma/client'
+import monthlyOrderService from '@/services/monthlyOrder'
 
 type ListQuery = {
     selectedMonth: string
@@ -12,6 +13,7 @@ type ListQuery = {
 
 type ResponseData = {
     list: Partial<Ordering>[]
+    orderStatus: MonthlyOrder | null
 }
 
 export default async function handler(
@@ -25,14 +27,19 @@ export default async function handler(
             const params = req.query as ListQuery
             const user = await userMiddleware(req)
             if (!user) {
-                return res.status(401).json({ list: [] })
+                return res.status(401).json({ list: [], orderStatus: null })
             }
 
             const list = await orderingService.getOrderingsByMonth(
                 params.selectedMonth
             )
+            const monthlyOrder =
+                await monthlyOrderService.getOrCreateMonthlyOrder(
+                    params.selectedMonth,
+                    user.id
+                )
 
-            return res.status(200).json({ list })
+            return res.status(200).json({ list, orderStatus: monthlyOrder })
         }
         default: {
             res.setHeader('Allow', ['GET'])

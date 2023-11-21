@@ -12,9 +12,12 @@ import {
     Typography,
 } from '@mui/material'
 import { useRouter } from 'next/navigation'
-import toastHelper from '@/utils/toast'
+
 import PasswordField from '@/components/common/PasswordField'
 import FirstLoginDialog from '@/components/login/FirstLoginDialog'
+
+import { StaticPath } from '@/utils/constant'
+import toastHelper from '@/utils/toast'
 
 const Login = () => {
     const router = useRouter()
@@ -48,7 +51,7 @@ const Login = () => {
                     return
                 } else {
                     toastHelper.success('Login successful')
-                    router.push('/ordering/account')
+                    router.push(StaticPath.LoginedHomePage)
                     return
                 }
             }

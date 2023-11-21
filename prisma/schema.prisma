@@ -13,6 +13,10 @@ model User {
   createdByOrderings Ordering[] @relation(name: "UserCreatorOrderings")
   updatedByOrderings Ordering[] @relation(name: "UserUpdaterOrderings")
   deletedByOrderings Ordering[] @relation(name: "UserDeleterOrderings")
+
+  createdByMonthly MonthlyOrder[] @relation(name: "UserCreatorMonthlyOrder")
+  updatedByMonthly MonthlyOrder[] @relation(name: "UserUpdaterMonthlyOrder")
+  deletedByMonthly MonthlyOrder[] @relation(name: "UserDeleterMonthlyOrder")
 }
 
 model Product {
@@ -40,6 +44,25 @@ model Ordering {
   updater   User     @relation(fields: [updatedBy], references: [id], name: "UserUpdaterOrderings")
   deletedBy Int?
   deleter   User?    @relation(fields: [deletedBy], references: [id], name: "UserDeleterOrderings")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+}
+
+model MonthlyOrder {
+  id        Int      @id @default(autoincrement())
+  selectedMonth String
+  status String
+  expectedPrice Float?
+  actualPrice Float?
+  reason String?
+  expectedDeliveryDate String?
+  createdBy Int
+  creator   User     @relation(fields: [createdBy], references: [id], name: "UserCreatorMonthlyOrder")
+  updatedBy Int
+  updater   User     @relation(fields: [updatedBy], references: [id], name: "UserUpdaterMonthlyOrder")
+  deletedBy Int?
+  deleter   User?    @relation(fields: [deletedBy], references: [id], name: "UserDeleterMonthlyOrder")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?

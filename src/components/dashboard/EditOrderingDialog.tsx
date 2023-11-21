@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 
 import BaseForm from '@/components/common/BaseDialog'
 import CountBox from '@/components/common/CountBox'
@@ -51,11 +50,11 @@ function EditOrderingDialog({
         }
         setLoading(true)
         try {
-            const res = await fetch(`/api/ordering/item/${item?.id}`, {
+            const response = await fetch(`/api/ordering/item/${item?.id}`, {
                 method: 'PATCH',
                 body: JSON.stringify(postBody),
             })
-            const data = await res.json()
+            const data = await response.json()
             if (data.success) {
                 toastHelper.success('Item Edited')
                 onItemEditedHandler({
