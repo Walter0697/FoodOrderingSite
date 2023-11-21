@@ -16,6 +16,7 @@ import { OrderingListItem } from '@/types/display/ordering'
 import { Box, Grid } from '@mui/material'
 import { convertOrderingToOrderingListItem_List } from '@/utils/display'
 import toastHelper from '@/utils/toast'
+import EditOrderingDialog from '@/components/dashboard/EditOrderingDialog'
 
 const MonthlyDashboard = () => {
     const params = useParams()
@@ -23,7 +24,11 @@ const MonthlyDashboard = () => {
     const [itemList, setItemList] = useState<OrderingListItem[]>([])
     const [locked, setLocked] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
+
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
+    const [edittingItem, setEdittingItem] = useState<OrderingListItem | null>(
+        null
+    )
 
     const selectedMonth: string = params ? (params.selectedMonth as string) : ''
 
@@ -60,12 +65,16 @@ const MonthlyDashboard = () => {
         refetch()
     }
 
+    const onItemEditedHandler = () => {
+        refetch()
+    }
+
     const onItemRemoveHandler = (item: OrderingListItem) => {
         refetch()
     }
 
     const onItemEditHandler = (item: OrderingListItem) => {
-        console.log('edit', item)
+        setEdittingItem(item)
     }
 
     return (
@@ -98,6 +107,12 @@ const MonthlyDashboard = () => {
                 selectedMonth={selectedMonth}
                 onItemCreatedHandler={onItemCreatedHandler}
                 handleClose={() => setDialogOpen(false)}
+            />
+            <EditOrderingDialog
+                open={edittingItem !== null}
+                item={edittingItem ?? undefined}
+                onItemEditedHandler={onItemEditedHandler}
+                handleClose={() => setEdittingItem(null)}
             />
         </Box>
     )

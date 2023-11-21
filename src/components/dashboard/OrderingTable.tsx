@@ -130,7 +130,9 @@ function OrderingTable({
         setCurrentSorting({ orderBy: column, order: 'desc' })
     }
 
-    const onEditHandler = async (ordering: OrderingListItem) => {}
+    const onEditHandler = async (ordering: OrderingListItem) => {
+        onItemEditHandler && onItemEditHandler(ordering)
+    }
 
     const onRemoveHandler = async (ordering: OrderingListItem) => {
         const confirmed = window.confirm(
