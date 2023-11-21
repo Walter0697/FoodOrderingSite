@@ -11,7 +11,7 @@
 -   ✅ lock form for +/- 1 month
 -   ✅ lock form whenever admin is purchasing
 -   ✅ lock form when the form is ordered
--   [] status for ordered form, possibly editted item, and expected delivery date
+-   ✅ expected delivery date, actual price and extra notes for reasonings
 -   ✅ Status for Monthly Ordering
 -   [] Watch history price for the current product
 -   [] Adding company from for product

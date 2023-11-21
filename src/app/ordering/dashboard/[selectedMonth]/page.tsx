@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import useUserData from '@/stores/useUserData'
-import io, { Socket } from 'Socket.IO-client'
-
+import io, { Socket } from 'socket.io-client'
 import { MonthlyOrder, Ordering } from '@prisma/client'
 
 import DashboardTitle from '@/components/dashboard/DashboardTitle'

@@ -35,7 +35,7 @@ function EditOrderingDialog({
         OrderingType.Food
     )
     const [unit, setUnit] = useState<number>(1)
-    const totalPrice = item ? item.totalPrice * unit : 0
+    const totalPrice = item ? item.unitPrice * unit : 0
 
     useEffect(() => {
         setProductType(item?.type || OrderingType.Food)
