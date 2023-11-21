@@ -16,6 +16,7 @@ import EditOrderingDialog from '@/components/dashboard/EditOrderingDialog'
 
 import { SocketActionData } from '@/types/socket'
 import { OrderingListItem } from '@/types/display/ordering'
+import { SocketActionType } from '@/types/enum'
 
 import { Box, Grid } from '@mui/material'
 import {
@@ -24,8 +25,8 @@ import {
     shouldPerformAction,
 } from '@/utils/display'
 import { performActionOnList } from '@/utils/list'
+import { monthAllowEdit } from '@/utils/month'
 import toastHelper from '@/utils/toast'
-import { SocketActionType } from '@/types/enum'
 
 let socket: Socket | null = null
 let itemListStored: OrderingListItem[] = []
@@ -44,6 +45,7 @@ const MonthlyDashboard = () => {
     )
 
     const selectedMonth: string = params ? (params.selectedMonth as string) : ''
+    const allowEdit = monthAllowEdit(selectedMonth)
 
     const setCurrentItemList = (list: OrderingListItem[]) => {
         setItemList(list)
@@ -151,12 +153,13 @@ const MonthlyDashboard = () => {
                     <DashboardActionList
                         onAddHandler={onItemAddHandler}
                         loading={locked || loading}
+                        disabled={!allowEdit}
                     />
                 </Grid>
                 <Grid item xs={12}>
                     <OrderingTable
                         itemList={itemList}
-                        disabled={locked || loading}
+                        disabled={locked || loading || !allowEdit}
                         onItemEditHandler={onItemEditHandler}
                         onItemRemoveHandler={onItemRemoveHandler}
                     />

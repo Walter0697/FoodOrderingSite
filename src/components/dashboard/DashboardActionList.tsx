@@ -10,11 +10,13 @@ import { block } from 'million/react'
 type DashboardActionListProps = {
     onAddHandler: () => void
     loading: boolean
+    disabled: boolean
 }
 
 function DashboardActionList({
     onAddHandler,
     loading,
+    disabled,
 }: DashboardActionListProps) {
     return (
         <Grid container spacing={0}>
@@ -23,6 +25,7 @@ function DashboardActionList({
                     variant="contained"
                     color="primary"
                     loading={loading}
+                    disabled={disabled}
                     startIcon={<IoMdAdd />}
                     onClick={onAddHandler}
                 >

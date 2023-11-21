@@ -8,7 +8,7 @@
 
 -   ✅ Fetching information from Snack Ordering Company
 -   ✅ Calculating total
--   [] lock form for +/- 1 month
+-   ✅ lock form for +/- 1 month
 -   [] lock form whenever admin is purchasing
 -   [] lock form when the form is ordered
 -   [] status for ordered form, possibly editted item, and expected delivery date

@@ -10,6 +10,8 @@ import {
     TableCell,
     Paper,
     IconButton,
+    TableSortLabel,
+    Box,
 } from '@mui/material'
 
 import { OrderingListItem } from '@/types/display/ordering'
@@ -17,6 +19,8 @@ import {
     getDisplayTextForOrderingType,
     getColorForOrderingType,
 } from '@/utils/display'
+
+import { OrderingType } from '@/types/enum'
 
 import { AiFillEdit } from 'react-icons/ai'
 import { TbTrashXFilled } from 'react-icons/tb'
@@ -61,7 +65,7 @@ const headCells = [
         label: 'Quantity',
     },
     {
-        id: 'Type',
+        id: 'type',
         paddingLeft: true,
         label: 'Type',
     },
@@ -76,7 +80,7 @@ const headCells = [
         label: 'Total',
     },
     {
-        id: 'Updated By',
+        id: 'updatedBy',
         paddingLeft: true,
         label: 'Updated By',
     },
@@ -96,7 +100,21 @@ function SortableTableHead({
                         align={headCell.paddingLeft ? 'right' : 'left'}
                         padding={'normal'}
                     >
-                        {headCell.label}
+                        <TableSortLabel
+                            active={
+                                currentSorting
+                                    ? currentSorting.orderBy === headCell.id
+                                    : false
+                            }
+                            direction={
+                                currentSorting
+                                    ? currentSorting.order
+                                    : undefined
+                            }
+                            onClick={() => setCurrentSorting(headCell.id)}
+                        >
+                            {headCell.label}
+                        </TableSortLabel>
                     </TableCell>
                 ))}
                 <TableCell align={'right'} padding={'normal'}>
@@ -105,6 +123,11 @@ function SortableTableHead({
             </TableRow>
         </TableHead>
     )
+}
+
+const OrderingTypeOrder = {
+    [OrderingType.Food]: 0,
+    [OrderingType.Drink]: 1,
 }
 
 function OrderingTable({
@@ -117,6 +140,57 @@ function OrderingTable({
     const [currentSorting, setCurrentSorting] = useState<SortOrder | null>(null)
 
     const getSortedList = () => {
+        if (currentSorting) {
+            if (currentSorting.orderBy === 'name') {
+                return itemList.toSorted((a, b) => {
+                    return currentSorting.order === 'asc'
+                        ? a.productName.localeCompare(b.productName)
+                        : b.productName.localeCompare(a.productName)
+                })
+            }
+            if (currentSorting.orderBy === 'quantity') {
+                return itemList.toSorted((a, b) => {
+                    return currentSorting.order === 'asc'
+                        ? a.quantity - b.quantity
+                        : b.quantity - a.quantity
+                })
+            }
+            if (currentSorting.orderBy === 'type') {
+                return itemList.toSorted((a, b) => {
+                    return currentSorting.order === 'asc'
+                        ? OrderingTypeOrder[a.type] - OrderingTypeOrder[b.type]
+                        : OrderingTypeOrder[b.type] - OrderingTypeOrder[a.type]
+                })
+            }
+            if (currentSorting.orderBy === 'price') {
+                return itemList.toSorted((a, b) => {
+                    return currentSorting.order === 'asc'
+                        ? a.unitPrice - b.unitPrice
+                        : b.unitPrice - a.unitPrice
+                })
+            }
+            if (currentSorting.orderBy === 'total') {
+                return itemList.toSorted((a, b) => {
+                    return currentSorting.order === 'asc'
+                        ? a.totalPrice - b.totalPrice
+                        : b.totalPrice - a.totalPrice
+                })
+            }
+            if (currentSorting.orderBy === 'updatedBy') {
+                return itemList.toSorted((a, b) => {
+                    return currentSorting.order === 'asc'
+                        ? a.updatedBy.localeCompare(b.updatedBy)
+                        : b.updatedBy.localeCompare(a.updatedBy)
+                })
+            }
+            if (currentSorting.orderBy === 'index') {
+                return itemList.toSorted((a, b) => {
+                    return currentSorting.order === 'asc'
+                        ? a.id - b.id
+                        : b.id - a.id
+                })
+            }
+        }
         return itemList.toSorted((a, b) => {
             return a.id - b.id
         })
@@ -126,11 +200,11 @@ function OrderingTable({
     const onCurrentSortingChangeHandler = (column: string) => {
         if (currentSorting) {
             if (currentSorting.orderBy === column) {
-                setCurrentSorting(
-                    currentSorting.order === 'asc'
-                        ? { orderBy: column, order: 'desc' }
-                        : { orderBy: column, order: 'asc' }
-                )
+                if (currentSorting.order === 'desc') {
+                    setCurrentSorting({ orderBy: column, order: 'asc' })
+                } else {
+                    setCurrentSorting(null)
+                }
                 return
             }
         }
