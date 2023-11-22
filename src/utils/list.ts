@@ -83,3 +83,29 @@ export const balanceWeight = (balance: number): string | null => {
     if (segment > 9) return '900'
     return `${segment}00`
 }
+
+// returning a list of orderIds
+// by removing one quatity of these following items, the balance will not overflow
+export const avoidOverflow = (itemList: OrderingListItem[]): number[] => {
+    const orderingList: Partial<Ordering>[] = itemList.map((s) => {
+        return {
+            quantity: s.quantity,
+            price: s.unitPrice,
+        }
+    })
+    const totalPrice = calculateTotalPrice(orderingList)
+    const balanceLeft = ConstantValue.TotalBudget - totalPrice
+    if (balanceLeft < 0) {
+        const overflow = Math.abs(balanceLeft)
+        const validList = itemList.filter((s) => {
+            // don't remove the item, just reduce the quantity
+            if (s.quantity === 1) return false
+            if (s.unitPrice < overflow) return false
+            return true
+        })
+    
+        return validList.map((s) => s.id)
+    }
+
+    return []  
+}

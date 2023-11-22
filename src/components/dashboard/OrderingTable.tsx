@@ -11,7 +11,9 @@ import {
     Paper,
     IconButton,
     TableSortLabel,
-    Box,
+    Tooltip,
+    Typography,
+    Stack,
 } from '@mui/material'
 
 import { OrderingListItem } from '@/types/display/ordering'
@@ -24,8 +26,10 @@ import { OrderingType } from '@/types/enum'
 
 import { AiFillEdit } from 'react-icons/ai'
 import { TbTrashXFilled } from 'react-icons/tb'
+import { FaCircleInfo } from 'react-icons/fa6'
 
 import toastHelper from '@/utils/toast'
+import { avoidOverflow } from '@/utils/list'
 
 import { block } from 'million/react'
 
@@ -35,7 +39,6 @@ type SortOrder = {
 }
 
 type TableHeadProps = {
-    itemList: OrderingListItem[]
     currentSorting: SortOrder | null
     setCurrentSorting: (currentSorting: string) => void
 }
@@ -87,7 +90,6 @@ const headCells = [
 ]
 
 function SortableTableHead({
-    itemList,
     currentSorting,
     setCurrentSorting,
 }: TableHeadProps) {
@@ -250,6 +252,8 @@ function OrderingTable({
         }
     }
 
+    const avoidOverflowList = avoidOverflow(itemList)
+
     return (
         <Paper
             sx={{
@@ -260,7 +264,6 @@ function OrderingTable({
             <TableContainer sx={{ maxHeight: '50vh' }}>
                 <Table sx={{ minWidth: 750 }} size={'small'} stickyHeader>
                     <SortableTableHead
-                        itemList={itemList}
                         currentSorting={currentSorting}
                         setCurrentSorting={onCurrentSortingChangeHandler}
                     />
@@ -278,7 +281,29 @@ function OrderingTable({
                                 }}
                             >
                                 <TableCell align={'left'}>
-                                    {index + 1}
+                                    <Stack
+                                        direction={'row'}
+                                        display={'flex'}
+                                        alignItems={'center'}
+                                        justifyContent={'flex-start'}
+                                    >
+                                        <Typography variant={'h6'}>
+                                            {index + 1}
+                                        </Typography>
+                                        {avoidOverflowList.includes(
+                                            item.id
+                                        ) && (
+                                            <Tooltip
+                                                title={
+                                                    'Removing one of this can avoid overflow'
+                                                }
+                                            >
+                                                <IconButton color={'info'}>
+                                                    <FaCircleInfo />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                    </Stack>
                                 </TableCell>
                                 <TableCell
                                     align={'left'}
