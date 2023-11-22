@@ -15,6 +15,7 @@ import toastHelper from '@/utils/toast'
 type FirstLoginDialogProps = {
     open: boolean
     username: string
+    displayName: string
     onSuccessHandler: () => void
     handleClose: () => void
 }
@@ -22,6 +23,7 @@ type FirstLoginDialogProps = {
 function FirstLoginDialog({
     open,
     username,
+    displayName,
     onSuccessHandler,
     handleClose,
 }: FirstLoginDialogProps) {
@@ -47,6 +49,12 @@ function FirstLoginDialog({
         // check if all fields have been filled
         if (!birthday || !favFood || !password || !confirmPassword) {
             toastHelper.error('Please fill in all fields')
+            setLoading(false)
+            return
+        }
+
+        if (!dayjs(birthday).isValid()) {
+            toastHelper.error('Invalid Birthday')
             setLoading(false)
             return
         }
@@ -109,7 +117,7 @@ function FirstLoginDialog({
             handleClose={handleClose}
         >
             <Typography variant={'h5'}>
-                Hi {username}, looks like this is the first time your login to
+                Hi {displayName}, looks like this is the first time you login to
                 this system.
             </Typography>
             <Typography variant={'h6'} mb={3}>

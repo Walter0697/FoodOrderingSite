@@ -13,4 +13,5 @@ export const StaticPath = {
 
 export const ConstantValue = {
     TotalBudget: 2000,
+    OverBudgetPercentage: 0.1,
 }

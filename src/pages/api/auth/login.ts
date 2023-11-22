@@ -12,6 +12,7 @@ type LoginRequestBody = {
 type ResponseData = {
     valid?: boolean
     firstLogin?: boolean
+    displayName?: string
     token?: string
 }
 
@@ -35,6 +36,7 @@ export default async function handler(
                     return res.status(201).json({
                         valid: true,
                         firstLogin: true,
+                        displayName: user.displayname,
                     })
                 } else {
                     return res.status(401).json({ valid: false })

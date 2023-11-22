@@ -4,7 +4,7 @@ import { OrderingListItem } from '@/types/display/ordering'
 import { OrderingType, SocketActionType } from '@/types/enum'
 import { SocketActionData } from '@/types/socket'
 
-import { ServerURLPrefix } from './constant'
+import { ServerURLPrefix, ConstantValue } from './constant'
 import _ from 'lodash'
 
 export const calculateTotalPrice = (list: Partial<Ordering>[]): number => {
@@ -66,4 +66,20 @@ export const performActionOnList = (
         }
     }
     return newList
+}
+
+export const balanceWeight = (balance: number): string | null => {
+    if (balance >= 0) return null
+    const overflow = Math.abs(balance)
+    const allowanceOverflow =
+        ConstantValue.TotalBudget * ConstantValue.OverBudgetPercentage
+    // by dividing into 10, it can have 0, 1, 2, 3, 4...... to 9 segment
+    // fontWeight bold only has 9 level from 100 to 900
+    const allowanceOverflowSegment = allowanceOverflow / 10
+    const segment = Math.floor(overflow / allowanceOverflowSegment)
+    if (segment === 0) return null
+
+    // prevent too large since fontWeight max is 900
+    if (segment > 9) return '900'
+    return `${segment}00`
 }

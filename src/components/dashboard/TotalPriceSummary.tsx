@@ -6,6 +6,7 @@ import { OrderingListItem } from '@/types/display/ordering'
 import { OrderingType } from '@/types/enum'
 
 import { ConstantValue } from '@/utils/constant'
+import { balanceWeight } from '@/utils/list'
 
 import { FaBowlFood } from 'react-icons/fa6'
 import { MdLocalDrink } from 'react-icons/md'
@@ -35,6 +36,7 @@ function TotalPriceSummary({ itemList, actualPrice }: TotalPriceSummaryProps) {
     )
     const total = foodTotal + drinkTotal
     const balanceLeft = ConstantValue.TotalBudget - total
+    const balanceFontWeight = balanceWeight(balanceLeft)
 
     return (
         <Grid container spacing={1}>
@@ -180,6 +182,7 @@ function TotalPriceSummary({ itemList, actualPrice }: TotalPriceSummaryProps) {
                                     sx={{
                                         color:
                                             balanceLeft < 0 ? 'red' : 'green',
+                                        fontWeight: balanceFontWeight,
                                     }}
                                 >
                                     $ {balanceLeft}

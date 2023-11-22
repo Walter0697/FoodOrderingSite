@@ -26,6 +26,7 @@ const Login = () => {
     const [password, setPassword] = useState('')
 
     const [firstLoginDialog, setFirstLoginDialog] = useState(false)
+    const [displayName, setDisplayName] = useState<string>('')
 
     const canLogin = !!username && !!password
 
@@ -48,6 +49,7 @@ const Login = () => {
             if (result.valid) {
                 if (result.firstLogin) {
                     setFirstLoginDialog(true)
+                    setDisplayName(result.displayName)
                     return
                 } else {
                     toastHelper.success('Login successful')
@@ -125,6 +127,7 @@ const Login = () => {
             <FirstLoginDialog
                 open={firstLoginDialog}
                 username={username}
+                displayName={displayName}
                 onSuccessHandler={() => clearField()}
                 handleClose={() => setFirstLoginDialog(false)}
             />
