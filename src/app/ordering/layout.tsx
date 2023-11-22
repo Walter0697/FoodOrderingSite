@@ -11,6 +11,7 @@ import TopBar from '@/components/common/TopBar'
 
 import userService from '@/services/user'
 import { Box } from '@mui/material'
+import { ExtraInformationType } from '@/types/model'
 
 async function getUserSessionFromServer(): Promise<UserSessionData | null> {
     const nextCookies = cookies()
@@ -34,10 +35,23 @@ async function getUserSessionFromServer(): Promise<UserSessionData | null> {
         return null
     }
 
+    let favFood: string = ''
+    try {
+        if (user.extraInformation) {
+            const extraInfo: ExtraInformationType = JSON.parse(
+                user.extraInformation
+            )
+            favFood = extraInfo.favFood ?? ''
+        }
+    } catch (err) {
+        favFood = ''
+    }
+
     return {
         username: user.username,
         displayname: user.displayname,
         rank: user.rank,
+        favFood: favFood,
         id: user.id,
     }
 }

@@ -75,13 +75,13 @@ function DashboardTitle() {
                     </Grid>
                     <Grid item xs={2} sx={{ height: '100%' }}>
                         <Button
-                            variant={'outlined'}
+                            variant={'contained'}
                             sx={{ height: '80%' }}
                             disabled={!gotoMonth}
                             onClick={onGoToMonthHandler}
                             fullWidth
                         >
-                            Go!
+                            Go~~!
                         </Button>
                     </Grid>
                 </Grid>

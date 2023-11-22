@@ -13,6 +13,7 @@
 -   ✅ lock form when the form is ordered
 -   ✅ expected delivery date, actual price and extra notes for reasonings
 -   ✅ Status for Monthly Ordering
+-   ✅ Reminder for ordering to prevent overflow
 -   [] Watch history price for the current product
 -   [] Adding company from for product
 -   [] History summary page

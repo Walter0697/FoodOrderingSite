@@ -79,6 +79,8 @@ function OrderingDialog({
 
             if (!result.success) {
                 toastHelper.error(result.message)
+                setLoading(false)
+                return
             }
 
             const data = result.data as ScraperProductType

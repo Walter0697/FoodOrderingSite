@@ -5,3 +5,8 @@ export type DetailedOrdering = {
     creator?: User
     updater?: User
 } & Ordering
+
+export type ExtraInformationType = {
+    birthday?: string
+    favFood?: string
+}

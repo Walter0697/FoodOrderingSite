@@ -92,6 +92,7 @@ function FirstLoginDialog({
 
             if (!result.success) {
                 toastHelper.error(result.message)
+                setLoading(false)
                 return
             }
 

@@ -43,10 +43,41 @@ const activateUser = async (
     return !!user
 }
 
+const updateUser = async (
+    id: number,
+    birthday: string,
+    favFood: string,
+    username: string,
+    password: string
+): Promise<boolean> => {
+    const extraInformation: string = JSON.stringify({
+        birthday: birthday,
+        favFood: favFood,
+    })
+
+    const updatingData: Partial<User> = {
+        extraInformation: extraInformation,
+        username: username,
+    }
+
+    if (password) {
+        const hashedPassword = await hashPassword(password)
+        updatingData.password = hashedPassword
+    }
+    const user = await getPrisma().user.update({
+        where: {
+            id: id,
+        },
+        data: updatingData,
+    })
+    return !!user
+}
+
 const userService = {
     getUserByUsername,
     getUserById,
     activateUser,
+    updateUser,
 }
 
 export default userService
