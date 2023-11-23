@@ -6,6 +6,8 @@ import { DatabaseErrorObj } from '@/types/common'
 
 import { userMiddleware } from '@/middlewares/user'
 
+import { ConstantValue } from '@/utils/constant'
+
 type EditOrderingRequestBody = {
     category: string
     quantity: number
@@ -28,6 +30,16 @@ export default async function handler(
             const user = await userMiddleware(req)
             if (!user) {
                 return res.status(401).json({ success: false })
+            }
+
+            if (
+                body.quantity < 0 ||
+                body.quantity > ConstantValue.MaximumProductNumber
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid quantity',
+                })
             }
 
             const orderId = Number(req.query.orderId)

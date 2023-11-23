@@ -15,7 +15,7 @@ import { OrderingType, SocketActionType } from '@/types/enum'
 import { SocketActionData } from '@/types/socket'
 
 import { checkURLValid } from '@/utils/orders'
-import { StaticPath } from '@/utils/constant'
+import { ConstantValue, StaticPath } from '@/utils/constant'
 import toastHelper from '@/utils/toast'
 
 type OrderingDialogProps = {
@@ -261,7 +261,9 @@ function OrderingDialog({
                                         onChange={(value) => setUnit(value)}
                                         readOnly={loading}
                                         minimumNumber={1}
-                                        maximumNumber={99}
+                                        maximumNumber={
+                                            ConstantValue.MaximumProductNumber
+                                        }
                                     />
                                     <Typography variant={'h6'} pt={2}>
                                         Total Price:{' '}

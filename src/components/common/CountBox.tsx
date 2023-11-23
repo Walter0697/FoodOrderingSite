@@ -106,6 +106,8 @@ function CountBox({
                             // can only input integer
                             if (isNaN(parseInt(e.target.value))) return
                             const final = parseInt(e.target.value)
+                            if (final > maximumNumber) return
+                            if (final < minimumNumber) return
                             onChange(final)
                         }}
                         disabled={readOnly}

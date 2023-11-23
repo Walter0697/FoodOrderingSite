@@ -12,6 +12,7 @@ import { OrderingType, SocketActionType } from '@/types/enum'
 import { OrderingListItem } from '@/types/display/ordering'
 import { SocketActionData } from '@/types/socket'
 
+import { ConstantValue } from '@/utils/constant'
 import toastHelper from '@/utils/toast'
 
 type EditOrderingDialogProps = {
@@ -156,7 +157,9 @@ function EditOrderingDialog({
                                         onChange={(value) => setUnit(value)}
                                         readOnly={loading}
                                         minimumNumber={1}
-                                        maximumNumber={99}
+                                        maximumNumber={
+                                            ConstantValue.MaximumProductNumber
+                                        }
                                     />
                                     <Typography variant={'h6'} pt={2}>
                                         Total Price:{' '}

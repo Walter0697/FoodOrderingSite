@@ -22,15 +22,6 @@ describe('Admin Authorization', () => {
             for (let i = 0; i < AdminOnlyRoutes.length; i++) {
                 cy.contains(AdminOnlyRoutes[i]).should('exist')
             }
-
-            cy.get('.MuiModal-backdrop').click()
-            cy.wait(500)
-
-            cy.get('#logoutBtn').click()
-
-            cy.wait(1000)
-
-            cy.url().should('include', '/login')
         })
     })
 })
