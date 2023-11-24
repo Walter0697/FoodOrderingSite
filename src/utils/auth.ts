@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import userService from '@/services/user'
 
 import { User } from '@prisma/client'
 
@@ -61,4 +62,20 @@ export const verifyToken = async (token: string): Promise<JwtInfo> => {
             resolve(decoded as JwtInfo)
         })
     })
+}
+
+export const isAuthorized = async (
+    token: string,
+    isAdmin: boolean
+): Promise<User | null> => {
+    const jwtInfo = await verifyToken(token)
+    const user = await userService.getUserById(jwtInfo.id)
+    if (!user || !user.activated) {
+        return null
+    }
+    if (isAdmin && user.rank !== 'admin') {
+        return null
+    }
+
+    return user
 }

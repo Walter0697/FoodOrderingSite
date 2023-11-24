@@ -40,7 +40,7 @@ const ListItems = [
         text: 'User List',
         adminOnly: true,
         icon: <IoPeople />,
-        link: '/ordering/users',
+        link: '/admin/users',
     },
     {
         text: 'Ordering Dashboard',

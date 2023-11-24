@@ -23,6 +23,7 @@ import {
 } from '@/utils/display'
 
 import { OrderingType } from '@/types/enum'
+import { SortOrder, TableHeadProps } from '@/types/sort'
 
 import { AiFillEdit } from 'react-icons/ai'
 import { TbTrashXFilled } from 'react-icons/tb'
@@ -33,16 +34,6 @@ import { avoidOverflow } from '@/utils/list'
 
 import { block } from 'million/react'
 
-type SortOrder = {
-    orderBy: string
-    order: 'asc' | 'desc'
-}
-
-type TableHeadProps = {
-    currentSorting: SortOrder | null
-    setCurrentSorting: (currentSorting: string) => void
-}
-
 type OrderingTableProps = {
     itemList: OrderingListItem[]
     disabled?: boolean
@@ -50,7 +41,6 @@ type OrderingTableProps = {
     onItemRemoveHandler?: (item: OrderingListItem) => void
 }
 
-// name quantity type unit price total
 const headCells = [
     {
         id: 'index',

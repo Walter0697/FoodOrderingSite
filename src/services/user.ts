@@ -2,6 +2,11 @@ import { getPrisma } from '@/utils/prisma'
 import { User } from '@prisma/client'
 import { hashPassword } from '@/utils/auth'
 
+const getAllUsers = async (): Promise<User[]> => {
+    const users = await getPrisma().user.findMany()
+    return users
+}
+
 const getUserByUsername = async (username: string): Promise<User | null> => {
     const user = await getPrisma().user.findUnique({
         where: {
@@ -74,6 +79,7 @@ const updateUser = async (
 }
 
 const userService = {
+    getAllUsers,
     getUserByUsername,
     getUserById,
     activateUser,

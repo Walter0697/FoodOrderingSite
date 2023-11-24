@@ -20,7 +20,7 @@ async function getUserSessionFromServer(): Promise<UserSessionData | null> {
         redirect(StaticPath.HomePage)
     }
 
-    const user = await isAuthorized(token.value, false)
+    const user = await isAuthorized(token.value, true)
     if (!user) {
         redirect(StaticPath.HomePage)
     }
@@ -46,7 +46,7 @@ async function getUserSessionFromServer(): Promise<UserSessionData | null> {
     }
 }
 
-export default async function OrderingLayout({
+export default async function AdminLayout({
     children,
 }: {
     children: React.ReactElement
