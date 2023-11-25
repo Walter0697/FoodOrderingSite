@@ -33,37 +33,37 @@ type OrderingTableProps = {
 const headCells = [
     {
         id: 'username',
-        paddingLeft: false,
+        paddingRight: false,
         label: 'Username',
     },
     {
         id: 'displayname',
-        paddingLeft: false,
+        paddingRight: false,
         label: 'Display Name',
     },
     {
         id: 'rank',
-        paddingLeft: false,
+        paddingRight: false,
         label: 'Rank',
     },
     {
         id: 'activated',
-        paddingLeft: true,
+        paddingRight: true,
         label: 'Activated',
     },
     {
         id: 'favFood',
-        paddingLeft: false,
+        paddingRight: false,
         label: 'Favourite Snack',
     },
     {
         id: 'birthday',
-        paddingLeft: false,
+        paddingRight: false,
         label: 'Birthday',
     },
     {
         id: 'signed',
-        paddingLeft: true,
+        paddingRight: true,
         label: 'Signed In',
     },
 ]
@@ -78,7 +78,7 @@ function SortableTableHead({
                 {headCells.map((headCell) => (
                     <TableCell
                         key={headCell.id}
-                        align={headCell.paddingLeft ? 'right' : 'left'}
+                        align={headCell.paddingRight ? 'right' : 'left'}
                         padding={'normal'}
                     >
                         <TableSortLabel

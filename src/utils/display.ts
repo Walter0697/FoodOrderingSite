@@ -4,14 +4,18 @@ import {
     OrderingType,
     SocketActionType,
 } from '@/types/enum'
-import { OrderingListItem } from '@/types/display/ordering'
-import { DetailedOrdering } from '@/types/model'
+import {
+    MonthlyOrderListItem,
+    OrderingListItem,
+} from '@/types/display/ordering'
+import { DetailedMonthlyOrder, DetailedOrdering } from '@/types/model'
 import { FoodCompanyInformation } from './constant'
 import {
     SocketActionData,
     SocketInformation,
     SocketStatusData,
 } from '@/types/socket'
+import dayjs from 'dayjs'
 
 export const getDisplayTextForOrderingType = (orderingType: OrderingType) => {
     switch (orderingType) {
@@ -42,6 +46,32 @@ export const getProductIdentifierFromURL = (url: string) => {
     const split = decoded.split('/')
     const identifier = split[split.length - 1]
     return identifier
+}
+
+export const convertMonthlyOrderingToListItem = (
+    monthlyOrdering: DetailedMonthlyOrder
+): MonthlyOrderListItem => {
+    return {
+        id: monthlyOrdering.id ?? -1,
+        selectedMonth: monthlyOrdering.selectedMonth ?? '',
+        expectedPrice: monthlyOrdering.expectedPrice ?? 0,
+        actualPrice: monthlyOrdering.actualPrice ?? 0,
+        expectedDeliveryDate: monthlyOrdering.expectedDeliveryDate ?? '',
+        updatedBy: monthlyOrdering.updater?.displayname ?? '',
+        updatedAt: monthlyOrdering.updatedAt
+            ? dayjs(monthlyOrdering.updatedAt).format('YYYY-MM-DD HH:mm')
+            : '',
+    }
+}
+
+export const convertMonthlyOrderingToListItem_List = (
+    monthlyOrderings: DetailedMonthlyOrder[]
+): MonthlyOrderListItem[] => {
+    const list: MonthlyOrderListItem[] = []
+    for (let i = 0; i < monthlyOrderings.length; i++) {
+        list.push(convertMonthlyOrderingToListItem(monthlyOrderings[i]))
+    }
+    return list
 }
 
 export const convertOrderingToOrderingListItem = (

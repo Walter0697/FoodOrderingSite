@@ -12,3 +12,13 @@ export type OrderingListItem = {
     createdBy: string
     updatedBy: string
 }
+
+export type MonthlyOrderListItem = {
+    id: number
+    selectedMonth: string
+    expectedPrice: number
+    actualPrice: number
+    expectedDeliveryDate: string
+    updatedBy: string
+    updatedAt: string
+}

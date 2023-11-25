@@ -51,7 +51,7 @@ const ListItems = [
         text: 'History',
         adminOnly: true,
         icon: <MdHistory />,
-        link: '/ordering/history',
+        link: '/admin/history',
     },
 ]
 

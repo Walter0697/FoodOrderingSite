@@ -15,8 +15,8 @@
 -   ✅ Status for Monthly Ordering
 -   ✅ Reminder for ordering to prevent overflow
 -   [] Watch history price for the current product
--   [] Adding company from for product
--   [] History summary page
+-   ✅ Adding company from for product
+-   ✅ History summary page
 
 ### 🐜 Limitation
 

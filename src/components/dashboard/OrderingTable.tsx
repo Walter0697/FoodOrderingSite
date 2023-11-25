@@ -44,37 +44,37 @@ type OrderingTableProps = {
 const headCells = [
     {
         id: 'index',
-        paddingLeft: false,
+        paddingRight: false,
         label: '#',
     },
     {
         id: 'name',
-        paddingLeft: false,
+        paddingRight: false,
         label: 'Product Name',
     },
     {
         id: 'quantity',
-        paddingLeft: true,
+        paddingRight: true,
         label: 'Quantity',
     },
     {
         id: 'type',
-        paddingLeft: true,
+        paddingRight: true,
         label: 'Type',
     },
     {
         id: 'price',
-        paddingLeft: true,
+        paddingRight: true,
         label: 'Unit Price',
     },
     {
         id: 'total',
-        paddingLeft: true,
+        paddingRight: true,
         label: 'Total',
     },
     {
         id: 'updatedBy',
-        paddingLeft: true,
+        paddingRight: true,
         label: 'Updated By',
     },
 ]
@@ -89,7 +89,7 @@ function SortableTableHead({
                 {headCells.map((headCell) => (
                     <TableCell
                         key={headCell.id}
-                        align={headCell.paddingLeft ? 'right' : 'left'}
+                        align={headCell.paddingRight ? 'right' : 'left'}
                         padding={'normal'}
                     >
                         <TableSortLabel

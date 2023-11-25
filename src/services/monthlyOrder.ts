@@ -5,6 +5,22 @@ import { DatabaseErrorObj } from '@/types/common'
 import { MonthlyOrderStatus } from '@/types/enum'
 import { CompleteMonthlyOrderDto } from '@/types/dto/monthlyOrder'
 
+const getAllMonthlyOrders = async () => {
+    const monthlyOrders = await getPrisma().monthlyOrder.findMany({
+        where: {
+            deletedAt: null,
+        },
+        include: {
+            updater: {
+                select: {
+                    displayname: true,
+                },
+            },
+        },
+    })
+    return monthlyOrders
+}
+
 const getOrCreateMonthlyOrder = async (
     selectedMonth: string,
     userId: number
@@ -94,6 +110,7 @@ const completeMonthlyOrder = async (
 }
 
 const monthlyOrderService = {
+    getAllMonthlyOrders,
     getOrCreateMonthlyOrder,
     setStatusForMonthlyOrder,
     completeMonthlyOrder,
