@@ -4,7 +4,7 @@ import { OrderingListItem } from '@/types/display/ordering'
 import { OrderingType, SocketActionType } from '@/types/enum'
 import { SocketActionData } from '@/types/socket'
 
-import { ServerURLPrefix, ConstantValue } from './constant'
+import { FoodCompanyInformation, ConstantValue } from './constant'
 import _ from 'lodash'
 
 export const calculateTotalPrice = (list: Partial<Ordering>[]): number => {
@@ -23,6 +23,13 @@ export const performActionOnList = (
     actionData: Partial<SocketActionData>
 ) => {
     const newList = _.cloneDeep(list)
+    let companyInfo = FoodCompanyInformation.find(
+        (s) => s.Name === actionData.productCompany
+    )
+    if (!companyInfo) {
+        // by default, it is the first one
+        companyInfo = FoodCompanyInformation[0]
+    }
     switch (actionData.actionType) {
         case SocketActionType.Create: {
             newList.push({
@@ -34,7 +41,7 @@ export const performActionOnList = (
                 type: actionData.type as OrderingType,
                 totalPrice:
                     (actionData.unitPrice ?? 0) * (actionData.quantity ?? 0),
-                link: ServerURLPrefix.ChingKee + actionData.productIdentifier,
+                link: companyInfo.Prefix + actionData.productIdentifier,
                 createdBy: actionData.userDisplayName ?? '',
                 updatedBy: actionData.userDisplayName ?? '',
             })
@@ -52,7 +59,7 @@ export const performActionOnList = (
                 ;(editingItem.totalPrice =
                     (actionData.unitPrice ?? 0) * (actionData.quantity ?? 0)),
                     (editingItem.link =
-                        ServerURLPrefix.ChingKee + actionData.productIdentifier)
+                        companyInfo.Prefix + actionData.productIdentifier)
                 editingItem.updatedBy = actionData.userDisplayName ?? ''
             }
             break
@@ -103,9 +110,9 @@ export const avoidOverflow = (itemList: OrderingListItem[]): number[] => {
             if (s.unitPrice < overflow) return false
             return true
         })
-    
+
         return validList.map((s) => s.id)
     }
 
-    return []  
+    return []
 }

@@ -6,7 +6,7 @@ import {
 } from '@/types/enum'
 import { OrderingListItem } from '@/types/display/ordering'
 import { DetailedOrdering } from '@/types/model'
-import { ServerURLPrefix } from './constant'
+import { FoodCompanyInformation } from './constant'
 import {
     SocketActionData,
     SocketInformation,
@@ -47,6 +47,13 @@ export const getProductIdentifierFromURL = (url: string) => {
 export const convertOrderingToOrderingListItem = (
     ordering: DetailedOrdering
 ): OrderingListItem => {
+    let companyInfo = FoodCompanyInformation.find(
+        (s) => s.Name === ordering.product?.company
+    )
+    if (!companyInfo) {
+        // by default, it is the first one
+        companyInfo = FoodCompanyInformation[0]
+    }
     return {
         id: ordering.id ?? -1,
         productName: ordering.product?.name ?? '',
@@ -55,7 +62,7 @@ export const convertOrderingToOrderingListItem = (
         quantity: ordering.quantity ?? 0,
         type: ordering.category as OrderingType,
         totalPrice: (ordering.price ?? 0) * (ordering.quantity ?? 0),
-        link: ServerURLPrefix.ChingKee + ordering.product?.identifier ?? '',
+        link: companyInfo.Prefix + ordering.product?.identifier ?? '',
         createdBy: ordering.creator?.displayname ?? '',
         updatedBy: ordering.updater?.displayname ?? '',
     }

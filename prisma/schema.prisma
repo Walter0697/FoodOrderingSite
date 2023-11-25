@@ -23,6 +23,7 @@ model Product {
   id        Int      @id @default(autoincrement())
   identifier String @unique
   name      String
+  company   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?

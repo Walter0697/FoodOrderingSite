@@ -39,6 +39,7 @@ export type SocketActionData = {
     userDisplayName: string
     productName: string
     productIdentifier: string
+    productCompany: string
     orderId: number
     selectedMonth: string
 } & (SocketCreateAction | SocketUpdateAction | SocketDeleteAction)

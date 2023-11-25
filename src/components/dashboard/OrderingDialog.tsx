@@ -144,6 +144,7 @@ function OrderingDialog({
                     : SocketActionType.Create,
                 productName: productData?.productName,
                 productIdentifier: productData?.productIdentifier,
+                productCompany: productData?.companyName,
                 quantity: unit,
                 unitPrice: productData?.productPrice,
                 selectedMonth: selectedMonth,

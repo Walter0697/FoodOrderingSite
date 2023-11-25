@@ -58,6 +58,7 @@ export default async function SocketHandler(
                                     ?.displayname,
                                 productName: data.productName,
                                 productIdentifier: data.productIdentifier,
+                                productCompany: data.productCompany,
                                 orderId: data.orderId,
                                 selectedMonth: data.selectedMonth,
                                 unitPrice: data.unitPrice,

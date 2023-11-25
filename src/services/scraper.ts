@@ -1,8 +1,24 @@
-import { ChingKeeProduct } from '@/types/scraper'
+import { ScrapProduct } from '@/types/scraper'
+import { FoodCompany, FoodCompanyInformation } from '@/utils/constant'
 import axios from 'axios'
 import * as cheerio from 'cheerio'
 
-const scrapChingKee = async (url: string): Promise<ChingKeeProduct | null> => {
+const scrapProduct = async (url: string): Promise<ScrapProduct | null> => {
+    for (const company of FoodCompanyInformation) {
+        if (url.includes(company.Acceptance)) {
+            if (company.activated) {
+                switch (company.Name) {
+                    case FoodCompany.ChingKee: {
+                        return await scrapChingKee(url)
+                    }
+                }
+            }
+        }
+    }
+    return null
+}
+
+const scrapChingKee = async (url: string): Promise<ScrapProduct | null> => {
     try {
         const axiosResponse = await axios.request({
             method: 'GET',
@@ -31,7 +47,8 @@ const scrapChingKee = async (url: string): Promise<ChingKeeProduct | null> => {
             priceNum = parseFloat(price.replace('HK$', '').trim())
         }
 
-        const result: ChingKeeProduct = {
+        const result: ScrapProduct = {
+            companyName: FoodCompany.ChingKee,
             productName: productTitle.text().trim(),
             productPrice: priceNum,
         }
@@ -44,7 +61,7 @@ const scrapChingKee = async (url: string): Promise<ChingKeeProduct | null> => {
 }
 
 const scraperService = {
-    scrapChingKee,
+    scrapProduct,
 }
 
 export default scraperService

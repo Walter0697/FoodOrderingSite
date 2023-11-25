@@ -113,6 +113,69 @@ function UserList({ itemList }: OrderingTableProps) {
 
     const getSortedList = () => {
         if (currentSorting) {
+            if (currentSorting.orderBy === 'username') {
+                return itemList.toSorted((a, b) => {
+                    if (currentSorting.order === 'desc') {
+                        return b.username.localeCompare(a.username)
+                    } else {
+                        return a.username.localeCompare(b.username)
+                    }
+                })
+            }
+            if (currentSorting.orderBy === 'displayname') {
+                return itemList.toSorted((a, b) => {
+                    if (currentSorting.order === 'desc') {
+                        return b.displayname.localeCompare(a.displayname)
+                    } else {
+                        return a.displayname.localeCompare(b.displayname)
+                    }
+                })
+            }
+            if (currentSorting.orderBy === 'rank') {
+                return itemList.toSorted((a, b) => {
+                    if (currentSorting.order === 'desc') {
+                        return b.rank.localeCompare(a.rank)
+                    } else {
+                        return a.rank.localeCompare(b.rank)
+                    }
+                })
+            }
+            if (currentSorting.orderBy === 'activated') {
+                return itemList.toSorted((a, b) => {
+                    if (currentSorting.order === 'desc') {
+                        return b.activated ? 1 : -1
+                    } else {
+                        return a.activated ? 1 : -1
+                    }
+                })
+            }
+            if (currentSorting.orderBy === 'favFood') {
+                return itemList.toSorted((a, b) => {
+                    if (currentSorting.order === 'desc') {
+                        return b.favFood.localeCompare(a.favFood)
+                    } else {
+                        return a.favFood.localeCompare(b.favFood)
+                    }
+                })
+            }
+            if (currentSorting.orderBy === 'birthday') {
+                return itemList.toSorted((a, b) => {
+                    if (currentSorting.order === 'desc') {
+                        return b.birthday.localeCompare(a.birthday)
+                    } else {
+                        return a.birthday.localeCompare(b.birthday)
+                    }
+                })
+            }
+            if (currentSorting.orderBy === 'signed') {
+                return itemList.toSorted((a, b) => {
+                    if (currentSorting.order === 'desc') {
+                        return b.signed ? 1 : -1
+                    } else {
+                        return a.signed ? 1 : -1
+                    }
+                })
+            }
         }
         return itemList.toSorted((a, b) => {
             return a.id - b.id

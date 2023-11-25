@@ -38,7 +38,7 @@ export default async function handler(
             }
 
             const body: SearchProductRequestBody = JSON.parse(req.body)
-            const productInformation = await scraperService.scrapChingKee(
+            const productInformation = await scraperService.scrapProduct(
                 body.url
             )
             if (!productInformation) {
@@ -47,8 +47,19 @@ export default async function handler(
                     message: 'Cannot find Product from the store',
                 })
             }
+
+            if (
+                productInformation.productPrice <= 0 ||
+                !productInformation.productName
+            ) {
+                return res.status(200).json({
+                    success: false,
+                    message: 'Scrapped Invalid information',
+                })
+            }
+
             const productIdentifier = getProductIdentifierFromURL(body.url)
-            const product = await productService.upsertChingKeeProduct(
+            const product = await productService.upsertProduct(
                 productIdentifier,
                 productInformation
             )
@@ -57,6 +68,7 @@ export default async function handler(
                 success: true,
                 data: {
                     productName: product.name,
+                    companyName: product.company ?? '',
                     productId: product.id,
                     productIdentifier: product.identifier,
                     productPrice: productInformation.productPrice,

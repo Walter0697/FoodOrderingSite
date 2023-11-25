@@ -1,4 +1,7 @@
-export type ChingKeeProduct = {
+import { FoodCompany } from '@/utils/constant'
+
+export type ScrapProduct = {
+    companyName: keyof typeof FoodCompany
     productName: string
     productPrice: number
 }
@@ -8,4 +11,5 @@ export type ScraperProductType = {
     productId: number
     productPrice: number
     productIdentifier: string
+    companyName: string
 }

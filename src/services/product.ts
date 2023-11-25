@@ -1,6 +1,6 @@
 import { getPrisma } from '@/utils/prisma'
 
-import { ChingKeeProduct } from '@/types/scraper'
+import { ScrapProduct } from '@/types/scraper'
 import { Product } from '@prisma/client'
 
 const getProductById = async (productId: number): Promise<Product | null> => {
@@ -12,9 +12,9 @@ const getProductById = async (productId: number): Promise<Product | null> => {
     return product
 }
 
-const upsertChingKeeProduct = async (
+const upsertProduct = async (
     identifier: string,
-    information: ChingKeeProduct
+    information: ScrapProduct
 ): Promise<Product> => {
     const product = await getPrisma().product.findUnique({
         where: {
@@ -39,6 +39,7 @@ const upsertChingKeeProduct = async (
         data: {
             name: information.productName,
             identifier: identifier,
+            company: information.companyName,
         },
     })
     return newProduct
@@ -46,7 +47,7 @@ const upsertChingKeeProduct = async (
 
 const productService = {
     getProductById,
-    upsertChingKeeProduct,
+    upsertProduct,
 }
 
 export default productService

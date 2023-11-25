@@ -1,7 +1,12 @@
-const ChingKeeAcceptance = '35261646.com.hk/products/'
+import { FoodCompanyInformation } from './constant'
+
 export const checkURLValid = (url: string) => {
-    if (url.includes(ChingKeeAcceptance)) {
-        return true
+    for (const company of FoodCompanyInformation) {
+        if (url.includes(company.Acceptance)) {
+            if (company.activated) {
+                return true
+            }
+        }
     }
     return false
 }
