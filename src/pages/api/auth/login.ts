@@ -49,6 +49,10 @@ export default async function handler(
                 return res.status(401).json({ valid: false })
             }
 
+            if (!user.activated) {
+                return res.status(401).json({ valid: false })
+            }
+
             const token = await generateToken(user)
 
             setCookie(ServerConfiguration.SessionKeyName, token, {

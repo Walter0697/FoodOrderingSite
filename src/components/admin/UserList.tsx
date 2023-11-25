@@ -11,12 +11,12 @@ import {
     Paper,
     IconButton,
     TableSortLabel,
-    Tooltip,
     Typography,
-    Stack,
     Box,
     Grid,
 } from '@mui/material'
+
+import UserEditDialog from './UserEditDialog'
 
 import { UserListItem } from '@/types/display/user'
 import { SortOrder, TableHeadProps } from '@/types/sort'
@@ -28,7 +28,6 @@ import { block } from 'million/react'
 
 type OrderingTableProps = {
     itemList: UserListItem[]
-    onItemEditHandler?: (item: UserListItem) => void
 }
 
 const headCells = [
@@ -109,6 +108,7 @@ function SortableTableHead({
 
 function UserList({ itemList }: OrderingTableProps) {
     const [loading, setLoading] = useState<boolean>(false)
+    const [editingItem, setEditingItem] = useState<UserListItem | null>(null)
     const [currentSorting, setCurrentSorting] = useState<SortOrder | null>(null)
 
     const getSortedList = () => {
@@ -135,7 +135,12 @@ function UserList({ itemList }: OrderingTableProps) {
     }
 
     const onEditHandler = async (ordering: UserListItem) => {
-        // onItemEditHandler && onItemEditHandler(ordering)
+        setEditingItem(ordering)
+    }
+
+    const onEditSuccessHandler = () => {
+        setLoading(false)
+        window.location.reload()
     }
 
     return (
@@ -223,6 +228,12 @@ function UserList({ itemList }: OrderingTableProps) {
                     </Paper>
                 </Grid>
             </Grid>
+            <UserEditDialog
+                user={editingItem}
+                open={editingItem !== null}
+                onSuccessHandler={onEditSuccessHandler}
+                handleClose={() => setEditingItem(null)}
+            />
         </Box>
     )
 }

@@ -73,8 +73,10 @@ export const isAuthorized = async (
     if (!user || !user.activated) {
         return null
     }
-    if (isAdmin && user.rank !== 'admin') {
-        return null
+    if (isAdmin) {
+        if (user.rank !== 'admin') {
+            return null
+        }
     }
 
     return user

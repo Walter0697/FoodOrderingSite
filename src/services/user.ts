@@ -78,12 +78,28 @@ const updateUser = async (
     return !!user
 }
 
+const setUserActivated = async (
+    id: number,
+    activated: boolean
+): Promise<boolean> => {
+    const user = await getPrisma().user.update({
+        where: {
+            id: id,
+        },
+        data: {
+            activated: activated,
+        },
+    })
+    return !!user
+}
+
 const userService = {
     getAllUsers,
     getUserByUsername,
     getUserById,
     activateUser,
     updateUser,
+    setUserActivated,
 }
 
 export default userService
