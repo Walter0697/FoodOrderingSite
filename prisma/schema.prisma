@@ -37,7 +37,7 @@ model Ordering {
   product   Product  @relation(fields: [productId], references: [id])
   selectedMonth String
   category  String
-  price     Float
+  price     Decimal  @db.Decimal(9,2)
   quantity  Int
   createdBy Int
   creator   User     @relation(fields: [createdBy], references: [id], name: "UserCreatorOrderings")
@@ -54,8 +54,8 @@ model MonthlyOrder {
   id        Int      @id @default(autoincrement())
   selectedMonth String
   status String
-  expectedPrice Float?
-  actualPrice Float?
+  expectedPrice Decimal @db.Decimal(9,2)
+  actualPrice Decimal @db.Decimal(9,2)
   reason String?
   expectedDeliveryDate String?
   createdBy Int
