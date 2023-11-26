@@ -22,6 +22,7 @@ import {
 } from '@/types/socket'
 import { OrderingListItem } from '@/types/display/ordering'
 import { MonthlyOrderStatus, SocketActionType } from '@/types/enum'
+import { DetailedMonthlyOrder } from '@/types/model'
 
 import { Box, Grid } from '@mui/material'
 import {
@@ -158,14 +159,14 @@ const MonthlyDashboard = () => {
             )
             setCurrentItemList(resultList)
 
-            const monthlyOrder = data.orderStatus as MonthlyOrder
+            const monthlyOrder = data.orderStatus as DetailedMonthlyOrder
             setMonthlyStatus(
                 (monthlyOrder.status as MonthlyOrderStatus) ??
                     MonthlyOrderStatus.Pending
             )
             if (monthlyOrder.status === MonthlyOrderStatus.Completed) {
                 setExpectedDeliveryDate(monthlyOrder.expectedDeliveryDate ?? '')
-                setActualPrice(monthlyOrder.actualPrice ?? null)
+                setActualPrice(monthlyOrder.actualPriceFloat ?? 0)
                 setReason(monthlyOrder.reason ?? '')
             }
         } catch (err: Error | unknown) {

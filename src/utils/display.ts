@@ -54,8 +54,8 @@ export const convertMonthlyOrderingToListItem = (
     return {
         id: monthlyOrdering.id ?? -1,
         selectedMonth: monthlyOrdering.selectedMonth ?? '',
-        expectedPrice: monthlyOrdering.expectedPrice ?? 0,
-        actualPrice: monthlyOrdering.actualPrice ?? 0,
+        expectedPrice: monthlyOrdering.expectedPriceFloat ?? 0,
+        actualPrice: monthlyOrdering.actualPriceFloat ?? 0,
         expectedDeliveryDate: monthlyOrdering.expectedDeliveryDate ?? '',
         updatedBy: monthlyOrdering.updater?.displayname ?? '',
         updatedAt: monthlyOrdering.updatedAt
@@ -88,10 +88,10 @@ export const convertOrderingToOrderingListItem = (
         id: ordering.id ?? -1,
         productName: ordering.product?.name ?? '',
         productIdentifier: ordering.product?.identifier ?? '',
-        unitPrice: ordering.price ?? 0,
+        unitPrice: ordering.priceFloat ?? 0,
         quantity: ordering.quantity ?? 0,
         type: ordering.category as OrderingType,
-        totalPrice: (ordering.price ?? 0) * (ordering.quantity ?? 0),
+        totalPrice: (ordering.priceFloat ?? 0) * (ordering.quantity ?? 0),
         link: companyInfo.Prefix + ordering.product?.identifier ?? '',
         createdBy: ordering.creator?.displayname ?? '',
         updatedBy: ordering.updater?.displayname ?? '',

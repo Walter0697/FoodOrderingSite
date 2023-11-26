@@ -1,11 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import { DetailedMonthlyOrder } from '@/types/model'
+
 import orderingService from '@/services/ordering'
+import monthlyOrderService from '@/services/monthlyOrder'
 
 import { userMiddleware } from '@/middlewares/user'
 
 import { MonthlyOrder, Ordering } from '@prisma/client'
-import monthlyOrderService from '@/services/monthlyOrder'
 
 type ListQuery = {
     selectedMonth: string
@@ -39,7 +41,25 @@ export default async function handler(
                     user.id
                 )
 
-            return res.status(200).json({ list, orderStatus: monthlyOrder })
+            const parsedList = list.map((item) => {
+                return {
+                    ...item,
+                    priceFloat: item.price ? item.price.toNumber() : 0,
+                }
+            })
+            const parsedMonthly: DetailedMonthlyOrder = {
+                ...monthlyOrder,
+                expectedPriceFloat: monthlyOrder.expectedPrice
+                    ? monthlyOrder.expectedPrice.toNumber()
+                    : 0,
+                actualPriceFloat: monthlyOrder.actualPrice
+                    ? monthlyOrder.actualPrice.toNumber()
+                    : 0,
+            }
+
+            return res
+                .status(200)
+                .json({ list: parsedList, orderStatus: parsedMonthly })
         }
         default: {
             res.setHeader('Allow', ['GET'])

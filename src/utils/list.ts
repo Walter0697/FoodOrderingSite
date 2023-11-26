@@ -1,5 +1,4 @@
 import { Ordering } from '@prisma/client'
-
 import { OrderingListItem } from '@/types/display/ordering'
 import { OrderingType, SocketActionType } from '@/types/enum'
 import { SocketActionData } from '@/types/socket'
@@ -12,7 +11,18 @@ export const calculateTotalPrice = (list: Partial<Ordering>[]): number => {
     for (let i = 0; i < list.length; i++) {
         const item = list[i]
         const quantity = item.quantity ?? 0
-        const price = item.price ?? 0
+        const price = item.price ? item.price.toNumber() : 0
+        total += quantity * price
+    }
+    return total
+}
+
+export const calculateTotalPriceWithListItem = (list: OrderingListItem[]) => {
+    let total = 0
+    for (let i = 0; i < list.length; i++) {
+        const item = list[i]
+        const quantity = item.quantity ?? 0
+        const price = item.unitPrice ?? 0
         total += quantity * price
     }
     return total
@@ -94,13 +104,7 @@ export const balanceWeight = (balance: number): string | null => {
 // returning a list of orderIds
 // by removing one quatity of these following items, the balance will not overflow
 export const avoidOverflow = (itemList: OrderingListItem[]): number[] => {
-    const orderingList: Partial<Ordering>[] = itemList.map((s) => {
-        return {
-            quantity: s.quantity,
-            price: s.unitPrice,
-        }
-    })
-    const totalPrice = calculateTotalPrice(orderingList)
+    const totalPrice = calculateTotalPriceWithListItem(itemList)
     const balanceLeft = ConstantValue.TotalBudget - totalPrice
     if (balanceLeft < 0) {
         const overflow = Math.abs(balanceLeft)

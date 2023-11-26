@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
-import { MonthlyOrder } from '@prisma/client'
+import { DetailedMonthlyOrder } from '@/types/model'
 
 import HistoryList from '@/components/admin/HistoryList'
 
@@ -11,7 +11,7 @@ import { convertMonthlyOrderingToListItem_List } from '@/utils/display'
 
 import monthlyOrderService from '@/services/monthlyOrder'
 
-async function getHistory(): Promise<MonthlyOrder[]> {
+async function getHistory(): Promise<DetailedMonthlyOrder[]> {
     const nextCookies = cookies()
 
     const token = nextCookies.get(ServerConfiguration.SessionKeyName)
@@ -25,7 +25,17 @@ async function getHistory(): Promise<MonthlyOrder[]> {
     }
 
     const monthly = await monthlyOrderService.getAllMonthlyOrders()
-    return monthly
+    const detailed: DetailedMonthlyOrder[] = monthly.map((monthlyOrder) => {
+        const currentItem = monthlyOrder as DetailedMonthlyOrder
+        currentItem.expectedPriceFloat = monthlyOrder.expectedPrice
+            ? monthlyOrder.expectedPrice.toNumber()
+            : 0
+        currentItem.actualPriceFloat = monthlyOrder.actualPrice
+            ? monthlyOrder.actualPrice.toNumber()
+            : 0
+        return currentItem
+    })
+    return detailed
 }
 
 export default async function HistoryPage() {

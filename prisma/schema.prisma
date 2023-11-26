@@ -54,8 +54,8 @@ model MonthlyOrder {
   id        Int      @id @default(autoincrement())
   selectedMonth String
   status String
-  expectedPrice Decimal @db.Decimal(9,2)
-  actualPrice Decimal @db.Decimal(9,2)
+  expectedPrice Decimal? @db.Decimal(9,2)
+  actualPrice Decimal? @db.Decimal(9,2)
   reason String?
   expectedDeliveryDate String?
   createdBy Int
