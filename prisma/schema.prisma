@@ -17,6 +17,14 @@ model User {
   createdByMonthly MonthlyOrder[] @relation(name: "UserCreatorMonthlyOrder")
   updatedByMonthly MonthlyOrder[] @relation(name: "UserUpdaterMonthlyOrder")
   deletedByMonthly MonthlyOrder[] @relation(name: "UserDeleterMonthlyOrder")
+
+  createdByBill Bill[] @relation(name: "UserCreatorBill")
+  updatedByBill Bill[] @relation(name: "UserUpdaterBill")
+  deletedByBill Bill[] @relation(name: "UserDeleterBill")
+
+  createdByBillPaidRecord BillPaidRecord[] @relation(name: "UserCreatorBillPaidRecord")
+  updatedByBillPaidRecord BillPaidRecord[] @relation(name: "UserUpdaterBillPaidRecord")
+  deletedByBillPaidRecord BillPaidRecord[] @relation(name: "UserDeleterBillPaidRecord")
 }
 
 model Product {
@@ -67,6 +75,44 @@ model MonthlyOrder {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
+}
+
+model Bill {
+  id              Int @id @default(autoincrement())
+  restaurantName  String
+  photoUrl        String
+  notes           String?
+  totalPrice      Decimal @db.Decimal(9,2)
+  targetUsers     Int[]
+  status          String
+  createdBy       Int
+  creator         User     @relation(fields: [createdBy], references: [id], name: "UserCreatorBill")
+  updatedBy       Int
+  updater         User     @relation(fields: [updatedBy], references: [id], name: "UserUpdaterBill")
+  deletedBy       Int?
+  deleter         User?    @relation(fields: [deletedBy], references: [id], name: "UserDeleterBill")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  paidRecords     BillPaidRecord[]
+}
+
+model BillPaidRecord {
+  id              Int @id @default(autoincrement()) 
+  billId          Int
+  bill            Bill     @relation(fields: [billId], references: [id])
+  notes           String?
+  Amount          Decimal @db.Decimal(9,2)
+  createdBy       Int
+  creator         User     @relation(fields: [createdBy], references: [id], name: "UserCreatorBillPaidRecord")
+  updatedBy       Int
+  updater         User     @relation(fields: [updatedBy], references: [id], name: "UserUpdaterBillPaidRecord")
+  deletedBy       Int?
+  deleter         User?    @relation(fields: [deletedBy], references: [id], name: "UserDeleterBillPaidRecord")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
 }
 
 model SeedHistory {

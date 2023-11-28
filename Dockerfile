@@ -25,6 +25,7 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/src/types ./src/types
 COPY --from=builder /app/src/seed ./src/seed
 COPY --from=builder /app/src/utils ./src/utils
+RUN mkdir -p /app/public/uploads
 
 EXPOSE 3000
 CMD ["pnpm", "start"]
