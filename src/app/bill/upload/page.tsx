@@ -25,13 +25,15 @@ const getUserList = async (): Promise<SelectOptions[]> => {
     }
 
     const users = await userService.getAllUsers()
-    const options: SelectOptions[] = users.map((user) => {
-        const output: SelectOptions = {
-            value: user.id,
-            label: user.displayname,
-        }
-        return output
-    })
+    const options: SelectOptions[] = users
+        .map((user) => {
+            const output: SelectOptions = {
+                value: user.id,
+                label: user.displayname,
+            }
+            return output
+        })
+        .filter((s) => s.value !== user.id) // removing myself
 
     return options
 }

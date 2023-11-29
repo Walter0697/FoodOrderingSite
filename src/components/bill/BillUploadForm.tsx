@@ -1,18 +1,25 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Grid, Autocomplete, TextField } from '@mui/material'
+import { useRouter } from 'next/navigation'
+import { Grid, Autocomplete, TextField, Button } from '@mui/material'
 
 import { ImageCropPickerType } from '@/types/cropper'
 import { SelectOptions } from '@/types/common'
 
 import ImageCropPicker from '@/components/common/ImageCropPicker'
 
+import toastHelper from '@/utils/toast'
+import { dataURItoBlob } from '@/utils/image'
+
 type BillUploadFormProps = {
     userList: SelectOptions[]
 }
 
 export default function BillUploadForm({ userList }: BillUploadFormProps) {
+    const router = useRouter()
+    const [loading, setLoading] = useState<boolean>(false)
+
     const [selectedImageType, setSelectedImageType] =
         useState<ImageCropPickerType>(ImageCropPickerType.NotSelected)
     const [imageStore, setImageStore] = useState<File | string | null>(null)
@@ -30,6 +37,63 @@ export default function BillUploadForm({ userList }: BillUploadFormProps) {
         setImageStore(image)
     }
 
+    const onSubmit = async () => {
+        if (loading) return
+        setLoading(true)
+        try {
+            if (
+                !imageStore ||
+                selectedImageType === ImageCropPickerType.NotSelected
+            ) {
+                toastHelper.error('Please select image')
+            }
+            if (!restaurant) {
+                toastHelper.error('Please enter restaurant')
+            }
+            if (!totalPrice || totalPrice === 0) {
+                toastHelper.error('Please enter total price')
+            }
+            if (!targetUsers.length) {
+                toastHelper.error('Please select target user')
+            }
+
+            const formData = new FormData()
+            if (selectedImageType === ImageCropPickerType.Original) {
+                formData.append('file', imageStore as File)
+            } else if (selectedImageType === ImageCropPickerType.Cropped) {
+                const blob = dataURItoBlob(imageStore as string)
+                formData.append('file', blob, 'cropped.png')
+            }
+
+            formData.append('restaurant', restaurant)
+            formData.append('totalPrice', totalPrice.toString())
+            formData.append('notes', notes)
+            for (let i = 0; i < targetUsers.length; i++) {
+                formData.append('targetUsers', targetUsers[i].value as string)
+            }
+
+            const response = await fetch('/api/bill/upload', {
+                method: 'POST',
+                body: formData,
+            })
+            const result = await response.json()
+
+            if (result.success) {
+                toastHelper.success('Upload success')
+
+                router.push('/bill/list')
+            } else {
+                toastHelper.error(result.message)
+            }
+        } catch (err: Error | unknown) {
+            if (err instanceof Error) {
+                toastHelper.error(err.message)
+            }
+        } finally {
+            setLoading(false)
+        }
+    }
+
     return (
         <Grid
             container
@@ -44,6 +108,7 @@ export default function BillUploadForm({ userList }: BillUploadFormProps) {
                 <ImageCropPicker
                     selected={selectedImageType}
                     onChange={setImage}
+                    disabled={loading}
                 />
             </Grid>
 
@@ -54,6 +119,7 @@ export default function BillUploadForm({ userList }: BillUploadFormProps) {
                     onChange={(e) => setRestaurant(e.target.value)}
                     variant={'outlined'}
                     fullWidth
+                    disabled={loading}
                 />
             </Grid>
 
@@ -71,6 +137,7 @@ export default function BillUploadForm({ userList }: BillUploadFormProps) {
                     }}
                     variant={'outlined'}
                     fullWidth
+                    disabled={loading}
                 />
             </Grid>
 
@@ -88,8 +155,10 @@ export default function BillUploadForm({ userList }: BillUploadFormProps) {
                             label={'Target User'}
                             variant={'outlined'}
                             fullWidth
+                            disabled={loading}
                         />
                     )}
+                    disabled={loading}
                 />
             </Grid>
 
@@ -104,7 +173,19 @@ export default function BillUploadForm({ userList }: BillUploadFormProps) {
                     }}
                     variant={'outlined'}
                     fullWidth
+                    disabled={loading}
                 />
+            </Grid>
+
+            <Grid item xs={12} md={12} lg={12} mb={2}>
+                <Button
+                    onClick={onSubmit}
+                    variant={'contained'}
+                    fullWidth
+                    disabled={loading}
+                >
+                    Submit
+                </Button>
             </Grid>
         </Grid>
     )

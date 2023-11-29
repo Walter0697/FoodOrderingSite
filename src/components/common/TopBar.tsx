@@ -23,6 +23,7 @@ import { IoMenu, IoPerson, IoPeople } from 'react-icons/io5'
 import { MdRestaurantMenu, MdHistory } from 'react-icons/md'
 import { BsFilePersonFill } from 'react-icons/bs'
 import { BiSolidFoodMenu } from 'react-icons/bi'
+import { FaReceipt } from 'react-icons/fa'
 
 import { UserSessionData } from '@/types/session'
 
@@ -46,6 +47,11 @@ const ListItems = [
         text: 'Ordering Dashboard',
         icon: <BiSolidFoodMenu />,
         link: '/ordering/dashboard',
+    },
+    {
+        text: 'Bill List',
+        icon: <FaReceipt />,
+        link: '/bill/list',
     },
     {
         text: 'History',

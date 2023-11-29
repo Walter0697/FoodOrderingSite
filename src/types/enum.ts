@@ -14,3 +14,8 @@ export enum MonthlyOrderStatus {
     Ordering = 'ordering',
     Completed = 'completed',
 }
+
+export enum BillStatus {
+    Pending = 'pending',
+    Completed = 'completed',
+}

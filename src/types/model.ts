@@ -1,4 +1,4 @@
-import { Ordering, Product, User, MonthlyOrder } from '@prisma/client'
+import { Ordering, Product, User, MonthlyOrder, Bill } from '@prisma/client'
 
 export type DetailedOrdering = {
     product?: Product
@@ -17,3 +17,10 @@ export type ExtraInformationType = {
     birthday?: string
     favFood?: string
 }
+
+export type DetailedBill = {
+    creator?: User
+    totalPriceFloat?: number
+    paidAmount?: number | null
+    paidTime?: Date | null
+} & Bill

@@ -14,6 +14,7 @@ type ImageCropPickerProps = {
         pickerType: ImageCropPickerType,
         image: string | File | null
     ) => void
+    disabled: boolean
 }
 
 type CropperDoneOptionType = {
@@ -28,6 +29,7 @@ type CropperRefType = {
 export default function ImageCropPicker({
     selected,
     onChange,
+    disabled,
 }: ImageCropPickerProps) {
     const containerRef = useRef<HTMLDivElement>(null)
     const [currentContainerWidth, setCurrentContainerWdith] =
@@ -102,6 +104,9 @@ export default function ImageCropPicker({
     }
 
     const onCropperButtonClick = () => {
+        if (disabled) {
+            return
+        }
         if (cropped) {
             revert()
             return
@@ -110,6 +115,9 @@ export default function ImageCropPicker({
     }
 
     const onImgSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (disabled) {
+            return
+        }
         if (e.target.files && e.target.files.length > 0) {
             if (cropped) {
                 revert()
@@ -187,6 +195,7 @@ export default function ImageCropPicker({
                             sx={{
                                 mt: 2,
                             }}
+                            disabled={disabled}
                         >
                             Upload Image
                         </Button>
@@ -229,6 +238,7 @@ export default function ImageCropPicker({
                             mt: 2,
                         }}
                         onClick={onCropperButtonClick}
+                        disabled={disabled}
                     >
                         {cropped ? 'Revert' : 'Crop!'}
                     </Button>
@@ -239,7 +249,9 @@ export default function ImageCropPicker({
                     variant={'contained'}
                     fullWidth
                     onClick={() => onOriginalSelect()}
-                    disabled={selected === ImageCropPickerType.Original}
+                    disabled={
+                        selected === ImageCropPickerType.Original || disabled
+                    }
                 >
                     Select Original
                 </Button>
@@ -250,7 +262,9 @@ export default function ImageCropPicker({
                     fullWidth
                     onClick={() => onCroppedSelect()}
                     disabled={
-                        !cropped || selected === ImageCropPickerType.Cropped
+                        !cropped ||
+                        selected === ImageCropPickerType.Cropped ||
+                        disabled
                     }
                 >
                     Select Cropped
