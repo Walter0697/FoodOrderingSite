@@ -1,8 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import orderingService from '@/services/ordering'
+import monthlyOrderService from '@/services/monthlyOrder'
 
 import { DatabaseErrorObj } from '@/types/common'
+import { MonthlyOrderStatus } from '@/types/enum'
+import { Ordering } from '@prisma/client'
 
 import { userMiddleware } from '@/middlewares/user'
 
@@ -43,7 +46,30 @@ export default async function handler(
             }
 
             const orderId = Number(req.query.orderId)
-            const existingOrder = await orderingService.editOrdering(
+            const existingOrder = await orderingService.getOrderingById(orderId)
+
+            if (!existingOrder) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Ordering not found',
+                })
+            }
+
+            const currentExistingOrder = existingOrder as Ordering
+            const monthlyOrder =
+                await monthlyOrderService.getOrCreateMonthlyOrder(
+                    currentExistingOrder.selectedMonth,
+                    user.id
+                )
+
+            if (monthlyOrder.status !== MonthlyOrderStatus.Pending) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Order for this month is locked',
+                })
+            }
+
+            const updatedOrder = await orderingService.editOrdering(
                 {
                     orderId,
                     category: body.category,
@@ -52,10 +78,10 @@ export default async function handler(
                 user.id
             )
 
-            if ((existingOrder as DatabaseErrorObj).message) {
+            if ((updatedOrder as DatabaseErrorObj).message) {
                 return res.status(400).json({
                     success: false,
-                    message: (existingOrder as DatabaseErrorObj).message,
+                    message: (updatedOrder as DatabaseErrorObj).message,
                 })
             }
 

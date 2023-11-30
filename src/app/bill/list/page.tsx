@@ -28,7 +28,7 @@ const getBillOwed = async (): Promise<DetailedBill[]> => {
 
     const bills = await billService.getOwedPendingBillByUserId(user.id)
     const detailed: DetailedBill[] = bills.map((bill) => {
-        const currentItem = bill as DetailedBill
+        const currentItem: DetailedBill = bill as unknown as DetailedBill
         currentItem.totalPriceFloat = bill.totalPrice
             ? bill.totalPrice.toNumber()
             : 0

@@ -2,12 +2,22 @@
 
 import useUserData from '@/stores/useUserData'
 
-import { Grid, Typography, Tooltip, Button } from '@mui/material'
+import {
+    Grid,
+    Typography,
+    Tooltip,
+    Button,
+    Box,
+    TooltipProps,
+} from '@mui/material'
+import { tooltipClasses } from '@mui/material/Tooltip'
+import { styled } from '@mui/material/styles'
 import { LoadingButton } from '@mui/lab'
 
 import { MonthlyOrderStatus } from '@/types/enum'
 
 import { IoMdAdd } from 'react-icons/io'
+import { AiFillEdit } from 'react-icons/ai'
 import { FaLock, FaLockOpen, FaMoneyBillWave } from 'react-icons/fa'
 
 import { block } from 'million/react'
@@ -23,6 +33,22 @@ type DashboardActionListProps = {
     expectedDeliveryDate: string
     reason: string
 }
+
+const CustomizedToolTip = styled(
+    ({
+        className,
+        ...props
+    }: {
+        className?: string
+    } & TooltipProps) => <Tooltip {...props} classes={{ popper: className }} />
+)(({ theme }) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+        maxWidth: '80vw',
+        width: 'auto',
+        fontSize: theme.typography.pxToRem(12),
+        border: '1px solid #dadde9',
+    },
+}))
 
 function DashboardActionList({
     onAddHandler,
@@ -68,21 +94,39 @@ function DashboardActionList({
             )}
             {status === MonthlyOrderStatus.Completed && (
                 <>
-                    <Grid item xs={8}>
+                    <Grid item xs={6}>
                         <Typography variant={'h6'}>
-                            Ordered! Expected Delivery Date:{' '}
-                            {expectedDeliveryDate}
+                            Ordered!
+                            {expectedDeliveryDate
+                                ? ` Expected Delivery Date: ${expectedDeliveryDate}`
+                                : ' Pending Delivery Date'}
                         </Typography>
                     </Grid>
                     <Grid
                         item
-                        xs={4}
+                        xs={6}
                         display={'flex'}
                         justifyContent={'flex-end'}
                     >
-                        <Tooltip
+                        {isAdmin && (
+                            <LoadingButton
+                                variant="contained"
+                                color="primary"
+                                loading={loading}
+                                disabled={disabled}
+                                startIcon={<AiFillEdit />}
+                                onClick={onCompleteOrdering}
+                                sx={{
+                                    ml: 2,
+                                    mr: 2,
+                                }}
+                            >
+                                Adjust Order
+                            </LoadingButton>
+                        )}
+                        <CustomizedToolTip
                             title={
-                                <>
+                                <Box>
                                     {reason.split('\n').map((row, index) => (
                                         <Typography
                                             variant={'h6'}
@@ -91,12 +135,12 @@ function DashboardActionList({
                                             {row}
                                         </Typography>
                                     ))}
-                                </>
+                                </Box>
                             }
-                            placement="bottom-start"
+                            placement={'bottom-start'}
                         >
                             <Button variant={'contained'}>Notes</Button>
-                        </Tooltip>
+                        </CustomizedToolTip>
                     </Grid>
                 </>
             )}

@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
+import Image from 'next/image'
 import useUserData from '@/stores/useUserData'
 
 import {
@@ -24,6 +25,8 @@ import { MdRestaurantMenu, MdHistory } from 'react-icons/md'
 import { BsFilePersonFill } from 'react-icons/bs'
 import { BiSolidFoodMenu } from 'react-icons/bi'
 import { FaReceipt } from 'react-icons/fa'
+
+import Icon from '@/assets/icon.png'
 
 import { UserSessionData } from '@/types/session'
 
@@ -120,7 +123,8 @@ function TopBar({ userSession }: { userSession: UserSessionData | null }) {
                     >
                         {openMenu ? <MdRestaurantMenu /> : <IoMenu />}
                     </IconButton>
-                    <Typography fontWeight={'bold'} sx={{ flexGrow: 1 }}>
+                    <Image src={Icon} alt={'icon'} height={50} width={50} />
+                    <Typography fontWeight={'bold'} sx={{ flexGrow: 1, ml: 2 }}>
                         Food Ordering
                     </Typography>
                     <Button

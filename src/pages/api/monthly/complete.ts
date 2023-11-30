@@ -16,7 +16,7 @@ type CompleteRequestBody = {
     status: string
     reason: string
     actualPrice: number
-    expectedDeliveryDate: string
+    expectedDeliveryDate?: string
 }
 
 type CompleteResponseData =
@@ -56,7 +56,7 @@ export default async function handler(
                     expectedPrice: totalPrice,
                     actualPrice: body.actualPrice,
                     reason: body.reason,
-                    expectedDeliveryDate: body.expectedDeliveryDate,
+                    expectedDeliveryDate: body.expectedDeliveryDate ?? '',
                 },
                 user.id
             )

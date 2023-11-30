@@ -30,6 +30,25 @@ const getOrderingsByMonth = async (
     return orderings
 }
 
+const getOrderingById = async (
+    orderId: number
+): Promise<Ordering | DatabaseErrorObj> => {
+    const ordering = await getPrisma().ordering.findFirst({
+        where: {
+            id: orderId,
+            deletedAt: null,
+        },
+    })
+
+    if (!ordering) {
+        return {
+            message: 'Ordering not found',
+        }
+    }
+
+    return ordering
+}
+
 const getOrderByProductIdAndMonth = async (
     productId: number,
     monthIdentifier: string
@@ -148,6 +167,7 @@ const removeOrdering = async (
 
 const orderingService = {
     getOrderingsByMonth,
+    getOrderingById,
     getOrderByProductIdAndMonth,
     upsertOrdering,
     editOrdering,

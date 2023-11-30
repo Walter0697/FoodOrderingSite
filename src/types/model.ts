@@ -1,5 +1,9 @@
 import { Ordering, Product, User, MonthlyOrder, Bill } from '@prisma/client'
 
+type Without<T, K> = {
+    [L in Exclude<keyof T, K>]: T[L]
+}
+
 export type DetailedOrdering = {
     product?: Product
     creator?: User
@@ -18,9 +22,11 @@ export type ExtraInformationType = {
     favFood?: string
 }
 
-export type DetailedBill = {
+type ExtraFieldBill = {
     creator?: User
     totalPriceFloat?: number
     paidAmount?: number | null
     paidTime?: Date | null
 } & Bill
+
+export type DetailedBill = Without<ExtraFieldBill, 'totalPrice'>

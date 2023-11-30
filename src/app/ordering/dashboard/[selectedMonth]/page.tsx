@@ -160,14 +160,24 @@ const MonthlyDashboard = () => {
             setCurrentItemList(resultList)
 
             const monthlyOrder = data.orderStatus as DetailedMonthlyOrder
-            setMonthlyStatus(
-                (monthlyOrder.status as MonthlyOrderStatus) ??
-                    MonthlyOrderStatus.Pending
-            )
-            if (monthlyOrder.status === MonthlyOrderStatus.Completed) {
-                setExpectedDeliveryDate(monthlyOrder.expectedDeliveryDate ?? '')
-                setActualPrice(monthlyOrder.actualPriceFloat ?? 0)
-                setReason(monthlyOrder.reason ?? '')
+            switch (monthlyOrder.status) {
+                case MonthlyOrderStatus.Pending.toString(): {
+                    setMonthlyStatus(MonthlyOrderStatus.Pending)
+                    break
+                }
+                case MonthlyOrderStatus.Ordering: {
+                    setMonthlyStatus(MonthlyOrderStatus.Ordering)
+                    break
+                }
+                case MonthlyOrderStatus.Completed: {
+                    setMonthlyStatus(MonthlyOrderStatus.Completed)
+                    setExpectedDeliveryDate(
+                        monthlyOrder.expectedDeliveryDate ?? ''
+                    )
+                    setActualPrice(monthlyOrder.actualPriceFloat ?? 0)
+                    setReason(monthlyOrder.reason ?? '')
+                    break
+                }
             }
         } catch (err: Error | unknown) {
             if (err instanceof Error) {
@@ -321,6 +331,15 @@ const MonthlyDashboard = () => {
                 onCompleted={onCompleted}
                 list={itemList}
                 handleClose={() => setOpenComplete(false)}
+                currentOrderData={
+                    monthlyStatus === MonthlyOrderStatus.Completed
+                        ? {
+                              expectedDeliveryDate: expectedDeliveryDate,
+                              actualPrice: actualPrice,
+                              reason: reason,
+                          }
+                        : null
+                }
             />
         </Box>
     )

@@ -16,7 +16,9 @@ import { OrderingListItem } from '@/types/display/ordering'
 
 import { StaticPath } from '@/utils/constant'
 import toastHelper from '@/utils/toast'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+dayjs.extend(customParseFormat)
 
 type CompleteOrderDialogProps = {
     open: boolean
@@ -24,39 +26,65 @@ type CompleteOrderDialogProps = {
     list: OrderingListItem[]
     onCompleted: (item: MonthlyOrder) => void
     handleClose: () => void
+
+    currentOrderData: {
+        expectedDeliveryDate?: string
+        reason?: string
+        actualPrice?: number | null
+    } | null
 }
 
 function CompleteOrderDialog({
     open,
     selectedMonth,
+
     list,
     onCompleted,
     handleClose,
+
+    currentOrderData,
 }: CompleteOrderDialogProps) {
     const router = useRouter()
     const [loading, setLoading] = useState<boolean>(false)
 
     const [reason, setReason] = useState<string>('')
     const [actualPrice, setActualPrice] = useState<number>(0)
-    const [expectedDeliveryDate, setExpectedDeliveryDate] =
-        useState<Date | null>(null)
+    const [expectedDeliveryDate, setExpectedDeliveryDate] = useState<
+        Date | Dayjs | null
+    >(null)
 
     useEffect(() => {
-        setLoading(false)
-        setReason('')
-        setActualPrice(0)
-        setExpectedDeliveryDate(null)
-    }, [open])
+        if (open && currentOrderData) {
+            setLoading(false)
+            setReason(currentOrderData.reason || '')
+            setActualPrice(currentOrderData.actualPrice || 0)
+            setExpectedDeliveryDate(
+                currentOrderData.expectedDeliveryDate
+                    ? dayjs(
+                          `${currentOrderData.expectedDeliveryDate}-00`,
+                          'YYYY-MM-DD'
+                      )
+                    : null
+            )
+        } else {
+            setLoading(false)
+            setReason('')
+            setActualPrice(0)
+            setExpectedDeliveryDate(null)
+        }
+    }, [open, currentOrderData])
 
     const onSubmitHandler = async () => {
-        if (!expectedDeliveryDate || !reason || !actualPrice) {
-            toastHelper.error('Please fill in all information')
+        if (!reason || !actualPrice) {
+            toastHelper.error('Please fill in the required information')
             return
         }
         const postBody = {
             reason,
             actualPrice,
-            expectedDeliveryDate: dayjs(expectedDeliveryDate).format('YYYY-MM'),
+            expectedDeliveryDate: expectedDeliveryDate
+                ? dayjs(expectedDeliveryDate).format('YYYY-MM-DD')
+                : '',
             selectedMonth,
         }
 
@@ -110,6 +138,7 @@ function CompleteOrderDialog({
                     <TextField
                         label={'Actual Price'}
                         value={actualPrice}
+                        required
                         onChange={(e) => {
                             // can only input integer
                             if (isNaN(parseInt(e.target.value))) return
@@ -140,6 +169,7 @@ function CompleteOrderDialog({
                 <Grid item xs={12}>
                     <TextField
                         label={'Reasons (if any)'}
+                        required
                         value={reason}
                         onChange={(e) => setReason(e.target.value)}
                         variant={'outlined'}

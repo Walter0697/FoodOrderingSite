@@ -2,8 +2,10 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import productService from '@/services/product'
 import orderingService from '@/services/ordering'
+import monthlyOrderService from '@/services/monthlyOrder'
 
 import { DatabaseErrorObj } from '@/types/common'
+import { MonthlyOrderStatus } from '@/types/enum'
 
 import { userMiddleware } from '@/middlewares/user'
 import { Ordering } from '@prisma/client'
@@ -47,6 +49,29 @@ export default async function handler(
                 return res.status(400).json({
                     success: false,
                     message: 'Invalid quantity',
+                })
+            }
+
+            if (
+                body.price < 0 ||
+                body.price > ConstantValue.MaximumProductPrice
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid price',
+                })
+            }
+
+            const monthlyOrder =
+                await monthlyOrderService.getOrCreateMonthlyOrder(
+                    body.selectedMonth,
+                    user.id
+                )
+
+            if (monthlyOrder.status !== MonthlyOrderStatus.Pending) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Order for this month is locked',
                 })
             }
 
