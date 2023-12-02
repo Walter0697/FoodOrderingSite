@@ -9,49 +9,39 @@ import {
     TableBody,
     TableCell,
     Paper,
-    IconButton,
     TableSortLabel,
 } from '@mui/material'
 
-import { DetailedBill } from '@/types/model'
+import { DetailedBillPaidRecord } from '@/types/model'
 import { SortOrder, TableHeadProps } from '@/types/sort'
 
-import OwedBillDialog from '@/components/bill/OwedBillDialog'
+import { block } from 'million/react'
 
-import { FaEye } from 'react-icons/fa'
-
-import toastHelper from '@/utils/toast'
-
-type OwedBillTableProps = {
-    billList: DetailedBill[]
+type BillPaidRecordTableProps = {
+    itemList: DetailedBillPaidRecord[]
     userId: number
 }
 
 const headCells = [
     {
-        id: 'restaurant',
-        label: 'Restaurant',
+        id: 'index',
         paddingRight: false,
+        label: '#',
     },
     {
-        id: 'createdBy',
-        label: 'Should Paid',
-        paddingRight: false,
-    },
-    {
-        id: 'paidAmount',
-        label: 'Paid',
-        paddingRight: false,
-    },
-    {
-        id: 'paidTime',
-        label: 'Paid Time',
-        paddingRight: false,
-    },
-    {
-        id: 'totalPrice',
-        label: 'Total Price',
+        id: 'amount',
         paddingRight: true,
+        label: 'Amount',
+    },
+    {
+        id: 'notes',
+        paddingRight: true,
+        label: 'Notes',
+    },
+    {
+        id: 'paidBy',
+        paddingRight: true,
+        label: 'Paid By',
     },
 ]
 
@@ -85,25 +75,58 @@ function SortableTableHead({
                         </TableSortLabel>
                     </TableCell>
                 ))}
-                <TableCell align={'right'} padding={'normal'}>
-                    Action
-                </TableCell>
             </TableRow>
         </TableHead>
     )
 }
 
-function OwedBillTable({ billList, userId }: OwedBillTableProps) {
-    const [loading, setLoading] = useState<boolean>(false)
+function BillPaidRecordTable({ itemList, userId }: BillPaidRecordTableProps) {
     const [currentSorting, setCurrentSorting] = useState<SortOrder | null>(null)
 
-    const [viewingItem, setViewingItem] = useState<DetailedBill | null>(null)
-
     const getSortedList = () => {
-        return billList.toSorted((a, b) => {
+        if (currentSorting) {
+            if (currentSorting.orderBy === 'index') {
+                return itemList.toSorted((a, b) => {
+                    return currentSorting.order === 'asc'
+                        ? a.id - b.id
+                        : b.id - a.id
+                })
+            }
+
+            if (currentSorting.orderBy === 'notes') {
+                return itemList.toSorted((a, b) => {
+                    const aNotes = a.notes ?? ''
+                    const bNotes = b.notes ?? ''
+                    return currentSorting.order === 'asc'
+                        ? aNotes.localeCompare(bNotes)
+                        : bNotes.localeCompare(aNotes)
+                })
+            }
+
+            if (currentSorting.orderBy === 'amount') {
+                return itemList.toSorted((a, b) => {
+                    return currentSorting.order === 'asc'
+                        ? a.Amount - b.Amount
+                        : b.Amount - a.Amount
+                })
+            }
+
+            if (currentSorting.orderBy === 'paidBy') {
+                return itemList.toSorted((a, b) => {
+                    const aName = a.creator?.displayname ?? ''
+                    const bName = b.creator?.displayname ?? ''
+                    return currentSorting.order === 'asc'
+                        ? aName.localeCompare(bName)
+                        : bName.localeCompare(aName)
+                })
+            }
+        }
+
+        return itemList.toSorted((a, b) => {
             return a.id - b.id
         })
     }
+
     const sortedList = getSortedList()
 
     const onCurrentSortingChangeHandler = (column: string) => {
@@ -120,18 +143,9 @@ function OwedBillTable({ billList, userId }: OwedBillTableProps) {
         setCurrentSorting({ orderBy: column, order: 'desc' })
     }
 
-    const onViewHandler = (item: DetailedBill) => {
-        setViewingItem(item)
-    }
-
     return (
-        <Paper
-            sx={{
-                maxHeight: '60vh',
-                overflow: 'hidden',
-            }}
-        >
-            <TableContainer sx={{ maxHeight: '60vh' }}>
+        <Paper>
+            <TableContainer sx={{ maxHeight: '50vh' }}>
                 <Table sx={{ minWidth: 750 }} size={'small'} stickyHeader>
                     <SortableTableHead
                         currentSorting={currentSorting}
@@ -145,50 +159,32 @@ function OwedBillTable({ billList, userId }: OwedBillTableProps) {
                                 sx={{
                                     height: '50px',
                                     fontSize: '20px',
+                                    backgroundColor:
+                                        userId === item.createdBy
+                                            ? 'yellow'
+                                            : 'inherit',
                                 }}
                             >
-                                <TableCell align={'left'}>
-                                    {item.restaurantName}
+                                <TableCell align={'left'} padding={'normal'}>
+                                    {index + 1}
                                 </TableCell>
-                                <TableCell align={'left'}>
-                                    {item.creator
-                                        ? item.creator.displayname
-                                        : ''}
+                                <TableCell align={'right'} padding={'normal'}>
+                                    {item.Amount}
                                 </TableCell>
-                                <TableCell align={'left'}>
-                                    {item.paidAmount ? item.paidAmount : '-'}
+                                <TableCell align={'right'} padding={'normal'}>
+                                    {item.notes}
                                 </TableCell>
-                                <TableCell align={'left'}>
-                                    {item.paidTime ? item.paidTime : '-'}
-                                </TableCell>
-                                <TableCell align={'right'}>
-                                    {item.totalPrice}
-                                </TableCell>
-                                <TableCell align={'right'}>
-                                    <IconButton
-                                        disabled={loading}
-                                        color={'success'}
-                                        onClick={() => onViewHandler(item)}
-                                    >
-                                        <FaEye />
-                                    </IconButton>
+                                <TableCell align={'right'} padding={'normal'}>
+                                    {item.creator?.displayname}
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
-            <OwedBillDialog
-                open={viewingItem !== null}
-                bill={viewingItem}
-                handleClose={() => setViewingItem(null)}
-                userId={userId}
-                onSuccessHandler={() => {
-                    window.location.reload()
-                }}
-            />
         </Paper>
     )
 }
 
-export default OwedBillTable
+const BillPaidRecordTableBlock = block(BillPaidRecordTable)
+export default BillPaidRecordTableBlock

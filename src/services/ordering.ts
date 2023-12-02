@@ -6,7 +6,7 @@ import { EditOrderingDto, ManageOrderingDto } from '@/types/dto/ordering'
 
 const getOrderingsByMonth = async (
     monthIdentifier: string
-): Promise<Partial<Ordering>[]> => {
+): Promise<Ordering[]> => {
     const orderings = await getPrisma().ordering.findMany({
         where: {
             selectedMonth: monthIdentifier,

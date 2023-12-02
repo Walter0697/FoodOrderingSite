@@ -48,7 +48,7 @@ function CompleteOrderDialog({
     const [loading, setLoading] = useState<boolean>(false)
 
     const [reason, setReason] = useState<string>('')
-    const [actualPrice, setActualPrice] = useState<number>(0)
+    const [actualPrice, setActualPrice] = useState<string>('')
     const [expectedDeliveryDate, setExpectedDeliveryDate] = useState<
         Date | Dayjs | null
     >(null)
@@ -57,7 +57,11 @@ function CompleteOrderDialog({
         if (open && currentOrderData) {
             setLoading(false)
             setReason(currentOrderData.reason || '')
-            setActualPrice(currentOrderData.actualPrice || 0)
+            setActualPrice(
+                currentOrderData.actualPrice
+                    ? currentOrderData.actualPrice.toString()
+                    : '0'
+            )
             setExpectedDeliveryDate(
                 currentOrderData.expectedDeliveryDate
                     ? dayjs(
@@ -69,7 +73,7 @@ function CompleteOrderDialog({
         } else {
             setLoading(false)
             setReason('')
-            setActualPrice(0)
+            setActualPrice('0')
             setExpectedDeliveryDate(null)
         }
     }, [open, currentOrderData])
@@ -79,9 +83,17 @@ function CompleteOrderDialog({
             toastHelper.error('Please fill in the required information')
             return
         }
+
+        // check if actual price is a number with only 2 decimal places
+        const actualPriceRegex = /^\d+(\.\d{1,2})?$/
+        if (!actualPriceRegex.test(actualPrice)) {
+            toastHelper.error('Actual price is invalid')
+            return
+        }
+
         const postBody = {
             reason,
-            actualPrice,
+            actualPrice: parseFloat(actualPrice),
             expectedDeliveryDate: expectedDeliveryDate
                 ? dayjs(expectedDeliveryDate).format('YYYY-MM-DD')
                 : '',
@@ -140,10 +152,8 @@ function CompleteOrderDialog({
                         value={actualPrice}
                         required
                         onChange={(e) => {
-                            // can only input integer
-                            if (isNaN(parseInt(e.target.value))) return
-                            const final = parseInt(e.target.value)
-                            setActualPrice(final)
+                            const currentValue = e.target.value
+                            setActualPrice(currentValue)
                         }}
                         disabled={loading}
                         fullWidth

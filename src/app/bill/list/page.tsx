@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { Box, Grid } from '@mui/material'
 
 import billService from '@/services/bill'
+import billPaidRecordService from '@/services/billPaidRecord'
 
 import { DetailedBill } from '@/types/model'
 
@@ -13,7 +14,14 @@ import OwedBillTable from '@/components/bill/OwedBillTable'
 import { ServerConfiguration, StaticPath } from '@/utils/constant'
 import { isAuthorized } from '@/utils/auth'
 
-const getBillOwed = async (): Promise<DetailedBill[]> => {
+import dayjs from 'dayjs'
+
+type BillOwedProps = {
+    list: DetailedBill[]
+    userId: number
+}
+
+const getBillOwed = async (): Promise<BillOwedProps> => {
     const nextCookies = cookies()
 
     const token = nextCookies.get(ServerConfiguration.SessionKeyName)
@@ -27,20 +35,38 @@ const getBillOwed = async (): Promise<DetailedBill[]> => {
     }
 
     const bills = await billService.getOwedPendingBillByUserId(user.id)
+    const billIdList = bills.map((bill) => bill.id)
+    const paidRecords =
+        await billPaidRecordService.getBillPaidRecordByUserIdAndBillIdList(
+            billIdList,
+            user.id
+        )
     const detailed: DetailedBill[] = bills.map((bill) => {
         const currentItem: DetailedBill = bill as unknown as DetailedBill
-        currentItem.totalPriceFloat = bill.totalPrice
-            ? bill.totalPrice.toNumber()
-            : 0
-        currentItem.paidAmount = null
-        currentItem.paidTime = null
+        currentItem.totalPrice = bill.totalPrice.toNumber()
+        const paidRecord = paidRecords.find(
+            (record) => record.billId === bill.id
+        )
+        if (paidRecord) {
+            currentItem.paidAmount = paidRecord.Amount.toNumber()
+            currentItem.paidTime = dayjs(paidRecord.createdAt).format(
+                'YYYY-MM-DD HH:mm:ss'
+            )
+        } else {
+            currentItem.paidAmount = null
+            currentItem.paidTime = null
+        }
         return currentItem
     })
-    return detailed
+
+    return {
+        list: detailed,
+        userId: user.id,
+    }
 }
 
 export default async function BillList() {
-    const ownedBills = await getBillOwed()
+    const serverProps = await getBillOwed()
 
     return (
         <Box p={3}>
@@ -49,7 +75,10 @@ export default async function BillList() {
                     <BillTitle />
                 </Grid>
                 <Grid item xs={12}>
-                    <OwedBillTable billList={ownedBills} />
+                    <OwedBillTable
+                        billList={serverProps.list}
+                        userId={serverProps.userId}
+                    />
                 </Grid>
             </Grid>
         </Box>

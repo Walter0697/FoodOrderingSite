@@ -58,7 +58,6 @@ export default async function handler(
 
             const result = await parseFormData(req, res)
             const body: UploadRequestBody = result.fields
-            console.log(body)
 
             const filename = await saveImageIntoStorage(result.files[0])
             const targetUsers: number[] =

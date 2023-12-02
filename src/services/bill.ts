@@ -25,6 +25,7 @@ const getBillByUserId = async (userId: number): Promise<Bill[]> => {
 const getOwedPendingBillByUserId = async (userId: number): Promise<Bill[]> => {
     const bills = await getPrisma().bill.findMany({
         where: {
+            status: BillStatus.Pending,
             targetUsers: {
                 has: userId,
             },

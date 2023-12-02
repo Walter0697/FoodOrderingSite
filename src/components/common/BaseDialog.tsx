@@ -23,6 +23,7 @@ type BaseFormProps = {
     handleClose: () => void
     loading?: boolean
     title: string
+    scroll?: 'body' | 'paper'
     onSubmitHandler?: () => void
     onCloseHandler?: () => void
     children: React.ReactNode
@@ -33,6 +34,7 @@ function BaseForm({
     handleClose,
     loading,
     title,
+    scroll,
     onSubmitHandler,
     children,
 }: BaseFormProps) {
@@ -42,6 +44,7 @@ function BaseForm({
             TransitionComponent={Transition}
             keepMounted
             maxWidth={'lg'}
+            scroll={scroll}
             fullWidth
             onClose={handleClose}
         >
@@ -53,7 +56,7 @@ function BaseForm({
                     onSubmitHandler && onSubmitHandler()
                 }}
             >
-                <DialogContent>{children}</DialogContent>
+                <DialogContent dividers>{children}</DialogContent>
                 <DialogActions>
                     <LoadingButton
                         variant="contained"
