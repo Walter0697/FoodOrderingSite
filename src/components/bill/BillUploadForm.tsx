@@ -25,7 +25,7 @@ export default function BillUploadForm({ userList }: BillUploadFormProps) {
     const [imageStore, setImageStore] = useState<File | string | null>(null)
 
     const [restaurant, setRestaurant] = useState<string>('')
-    const [totalPrice, setTotalPrice] = useState<number>(0)
+    const [totalPrice, setTotalPrice] = useState<string>('0')
     const [notes, setNotes] = useState<string>('')
     const [targetUsers, setTargetUsers] = useState<SelectOptions[]>([])
 
@@ -41,20 +41,39 @@ export default function BillUploadForm({ userList }: BillUploadFormProps) {
         if (loading) return
         setLoading(true)
         try {
+            let hasError = false
             if (
                 !imageStore ||
                 selectedImageType === ImageCropPickerType.NotSelected
             ) {
                 toastHelper.error('Please select image')
+                hasError = true
             }
             if (!restaurant) {
                 toastHelper.error('Please enter restaurant')
+                hasError = true
             }
-            if (!totalPrice || totalPrice === 0) {
+            if (!totalPrice || totalPrice === '0') {
                 toastHelper.error('Please enter total price')
+                hasError = true
+            } else {
+                // check if it is two decimal places
+                const regex = /^\d+(\.\d{1,2})?$/
+                if (!regex.test(totalPrice)) {
+                    toastHelper.error(
+                        'Total price only accept two decimal places'
+                    )
+                    hasError = true
+                }
             }
             if (!targetUsers.length) {
                 toastHelper.error('Please select target user')
+                hasError = true
+            }
+
+            if (hasError) {
+                setLoading(false)
+                return
             }
 
             const formData = new FormData()
@@ -129,11 +148,7 @@ export default function BillUploadForm({ userList }: BillUploadFormProps) {
                     value={totalPrice}
                     onChange={(e) => {
                         const value = e.target.value
-                        if (value) {
-                            setTotalPrice(parseInt(value))
-                        } else {
-                            setTotalPrice(0)
-                        }
+                        setTotalPrice(value)
                     }}
                     variant={'outlined'}
                     fullWidth

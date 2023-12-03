@@ -36,7 +36,7 @@ import { block } from 'million/react'
 
 const ListItems = [
     {
-        text: 'Personal Information',
+        text: 'Home Page',
         icon: <BsFilePersonFill />,
         link: '/ordering/account',
     },

@@ -1,16 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-
-import { BillStatus } from '@/types/enum'
-
 import billService from '@/services/bill'
-import billPaidRecordService from '@/services/billPaidRecord'
 import { userMiddleware } from '@/middlewares/user'
-
-type CreateBillPaidRecordRequestBody = {
-    billId: number
-    paidAmount: number
-    notes: string
-}
 
 export default async function handler(
     req: NextApiRequest,
@@ -28,9 +18,11 @@ export default async function handler(
                 })
             }
 
-            const body: CreateBillPaidRecordRequestBody = JSON.parse(req.body)
+            const { billId } = req.query
 
-            const bill = await billService.getBillById(body.billId)
+            const billIdNumber = Number(billId)
+
+            const bill = await billService.getBillById(billIdNumber)
             if (bill === null) {
                 return res.status(404).json({
                     success: false,
@@ -38,19 +30,14 @@ export default async function handler(
                 })
             }
 
-            if (bill.status !== BillStatus.Pending) {
-                return res.status(400).json({
+            if (bill.createdBy !== user.id) {
+                return res.status(403).json({
                     success: false,
-                    message: 'bill is not pending',
+                    message: 'not bill creator',
                 })
             }
 
-            const result = await billPaidRecordService.createOrUpdateBillRecord(
-                body.billId,
-                body.paidAmount,
-                body.notes,
-                user.id
-            )
+            const result = await billService.completeBill(billIdNumber, user.id)
 
             res.status(200).json({ success: true, data: result })
         }

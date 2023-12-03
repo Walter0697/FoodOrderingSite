@@ -62,6 +62,22 @@ const getBillPaidRecordByBillId = async (
     return billPaidRecords
 }
 
+const getBillPaidRecordByBillIdList = async (
+    billIdList: number[]
+): Promise<BillPaidRecord[]> => {
+    if (billIdList.length === 0) return []
+    const billPaidRecords = await getPrisma().billPaidRecord.findMany({
+        where: {
+            billId: {
+                in: billIdList,
+            },
+            deletedAt: null,
+        },
+    })
+
+    return billPaidRecords
+}
+
 const getBillPaidRecordByUserIdAndBillIdList = async (
     billIdList: number[],
     userId: number
@@ -83,6 +99,7 @@ const getBillPaidRecordByUserIdAndBillIdList = async (
 const billPaidRecordService = {
     createOrUpdateBillRecord,
     getBillPaidRecordByBillId,
+    getBillPaidRecordByBillIdList,
     getBillPaidRecordByUserIdAndBillIdList,
 }
 

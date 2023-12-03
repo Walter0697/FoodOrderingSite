@@ -15,14 +15,16 @@ import {
 
 import { DetailedBill } from '@/types/model'
 import { SortOrder, TableHeadProps } from '@/types/sort'
+import { SelectOptions } from '@/types/common'
 
-import OwedBillDialog from '@/components/bill/OwedBillDialog'
+import BillOwedDialog from '@/components/bill/BillOwedDialog'
 
 import { FaEye } from 'react-icons/fa'
 
-type OwedBillTableProps = {
+type BillOwedTableProps = {
     billList: DetailedBill[]
     userId: number
+    userList: SelectOptions[]
 }
 
 const headCells = [
@@ -32,18 +34,18 @@ const headCells = [
         paddingRight: false,
     },
     {
-        id: 'createdBy',
-        label: 'Should Paid',
-        paddingRight: false,
-    },
-    {
         id: 'paidAmount',
         label: 'Paid',
         paddingRight: false,
     },
     {
-        id: 'paidTime',
-        label: 'Paid Time',
+        id: 'numberOfPeople',
+        label: 'Number of People Paid',
+        paddingRight: false,
+    },
+    {
+        id: 'missing',
+        label: 'Missing Amount',
         paddingRight: false,
     },
     {
@@ -91,16 +93,27 @@ function SortableTableHead({
     )
 }
 
-function OwedBillTable({ billList, userId }: OwedBillTableProps) {
+type DetailedBillListItem = DetailedBill & { missing: number }
+
+function BillOwedTable({ billList, userId, userList }: BillOwedTableProps) {
     const [loading, setLoading] = useState<boolean>(false)
     const [currentSorting, setCurrentSorting] = useState<SortOrder | null>(null)
 
     const [viewingItem, setViewingItem] = useState<DetailedBill | null>(null)
 
+    const detailedList: DetailedBillListItem[] = billList.map((bill) => {
+        const currentItem: DetailedBillListItem = {
+            ...bill,
+            missing: bill.totalPrice - (bill.paidAmount ?? 0),
+        }
+
+        return currentItem
+    })
+
     const getSortedList = () => {
         if (currentSorting) {
             if (currentSorting.orderBy === 'index') {
-                return billList.toSorted((a, b) => {
+                return detailedList.toSorted((a, b) => {
                     return currentSorting.order === 'asc'
                         ? a.id - b.id
                         : b.id - a.id
@@ -108,25 +121,25 @@ function OwedBillTable({ billList, userId }: OwedBillTableProps) {
             }
 
             if (currentSorting.orderBy === 'restaurant') {
-                return billList.toSorted((a, b) => {
+                return detailedList.toSorted((a, b) => {
                     return currentSorting.order === 'asc'
                         ? a.restaurantName.localeCompare(b.restaurantName)
                         : b.restaurantName.localeCompare(a.restaurantName)
                 })
             }
 
-            if (currentSorting.orderBy === 'createdBy') {
-                return billList.toSorted((a, b) => {
-                    const aName = a.creator ? a.creator.displayname : ''
-                    const bName = b.creator ? b.creator.displayname : ''
+            if (currentSorting.orderBy === 'numberOfPeople') {
+                return detailedList.toSorted((a, b) => {
+                    const aPaidRatio = a.paidRatio ?? 0
+                    const bPaidRatio = b.paidRatio ?? 0
                     return currentSorting.order === 'asc'
-                        ? aName.localeCompare(bName)
-                        : bName.localeCompare(aName)
+                        ? aPaidRatio - bPaidRatio
+                        : bPaidRatio - aPaidRatio
                 })
             }
 
             if (currentSorting.orderBy === 'paidAmount') {
-                return billList.toSorted((a, b) => {
+                return detailedList.toSorted((a, b) => {
                     const aAmount = a.paidAmount ?? 0
                     const bAmount = b.paidAmount ?? 0
 
@@ -136,18 +149,19 @@ function OwedBillTable({ billList, userId }: OwedBillTableProps) {
                 })
             }
 
-            if (currentSorting.orderBy === 'paidTime') {
-                return billList.toSorted((a, b) => {
-                    const aTime = a.paidTime ?? ''
-                    const bTime = b.paidTime ?? ''
+            if (currentSorting.orderBy === 'missing') {
+                return detailedList.toSorted((a, b) => {
+                    const aAmount = a.paidAmount ?? 0
+                    const bAmount = b.paidAmount ?? 0
+
                     return currentSorting.order === 'asc'
-                        ? aTime.localeCompare(bTime)
-                        : bTime.localeCompare(aTime)
+                        ? a.totalPrice - aAmount - (b.totalPrice - bAmount)
+                        : b.totalPrice - bAmount - (a.totalPrice - aAmount)
                 })
             }
 
             if (currentSorting.orderBy === 'totalPrice') {
-                return billList.toSorted((a, b) => {
+                return detailedList.toSorted((a, b) => {
                     return currentSorting.order === 'asc'
                         ? a.totalPrice - b.totalPrice
                         : b.totalPrice - a.totalPrice
@@ -155,7 +169,7 @@ function OwedBillTable({ billList, userId }: OwedBillTableProps) {
             }
         }
 
-        return billList.toSorted((a, b) => {
+        return detailedList.toSorted((a, b) => {
             return a.id - b.id
         })
     }
@@ -200,21 +214,21 @@ function OwedBillTable({ billList, userId }: OwedBillTableProps) {
                                 sx={{
                                     height: '50px',
                                     fontSize: '20px',
+                                    backgroundColor:
+                                        item.paidRatio === 1 ? 'yellow' : null,
                                 }}
                             >
                                 <TableCell align={'left'}>
                                     {item.restaurantName}
                                 </TableCell>
                                 <TableCell align={'left'}>
-                                    {item.creator
-                                        ? item.creator.displayname
-                                        : ''}
-                                </TableCell>
-                                <TableCell align={'left'}>
                                     {item.paidAmount ? item.paidAmount : '-'}
                                 </TableCell>
                                 <TableCell align={'left'}>
-                                    {item.paidTime ? item.paidTime : '-'}
+                                    {item.paidPeopleNumber ?? ''}
+                                </TableCell>
+                                <TableCell align={'left'}>
+                                    {item.missing}
                                 </TableCell>
                                 <TableCell align={'right'}>
                                     {item.totalPrice}
@@ -233,11 +247,12 @@ function OwedBillTable({ billList, userId }: OwedBillTableProps) {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <OwedBillDialog
+            <BillOwedDialog
                 open={viewingItem !== null}
                 bill={viewingItem}
                 handleClose={() => setViewingItem(null)}
                 userId={userId}
+                userList={userList}
                 onSuccessHandler={() => {
                     window.location.reload()
                 }}
@@ -246,4 +261,4 @@ function OwedBillTable({ billList, userId }: OwedBillTableProps) {
     )
 }
 
-export default OwedBillTable
+export default BillOwedTable

@@ -4,10 +4,21 @@ import { Bill } from '@prisma/client'
 import { BillStatus } from '@/types/enum'
 import { ManageBillDto } from '@/types/dto/bill'
 
-const getBillByUserId = async (userId: number): Promise<Bill[]> => {
+const getBillById = async (billId: number): Promise<Bill | null> => {
+    const bill = await getPrisma().bill.findUnique({
+        where: {
+            id: billId,
+        },
+    })
+
+    return bill
+}
+
+const getBillsByUserId = async (userId: number): Promise<Bill[]> => {
     const bills = await getPrisma().bill.findMany({
         where: {
             createdBy: userId,
+            status: BillStatus.Pending,
         },
         orderBy: [
             {
@@ -62,10 +73,26 @@ const createBill = async (
     return bill
 }
 
+const completeBill = async (billId: number, userId: number): Promise<Bill> => {
+    const bill = await getPrisma().bill.update({
+        where: {
+            id: billId,
+        },
+        data: {
+            status: BillStatus.Completed,
+            updatedBy: userId,
+        },
+    })
+
+    return bill
+}
+
 const billService = {
-    getBillByUserId,
+    getBillById,
+    getBillsByUserId,
     getOwedPendingBillByUserId,
     createBill,
+    completeBill,
 }
 
 export default billService

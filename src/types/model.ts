@@ -18,7 +18,6 @@ export type DetailedOrdering = {
     priceFloat?: number
 } & Ordering
 
-
 export type DetailedMonthlyOrder = {
     updater?: User
     expectedPriceFloat?: number
@@ -34,6 +33,8 @@ type ExtraFieldBill = {
     creator?: User
     paidAmount?: number | null
     paidTime?: string | null
+    paidPeopleNumber?: string | null
+    paidRatio?: number | null
 } & Bill
 
 export type DetailedBill = Without<ExtraFieldBill, 'totalPrice'> & {
