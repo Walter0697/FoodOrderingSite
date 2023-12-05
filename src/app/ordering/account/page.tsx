@@ -110,7 +110,7 @@ function Dashboard() {
                             fullWidth
                             startIcon={<MdOutlineRemoveDone size={'50px'} />}
                         >
-                            Bill(s) you haven't recieved all money:{' '}
+                            Bill(s) you haven&apos;t recieved all money:{' '}
                             {uncompleted}
                         </Button>
                     </Grid>
