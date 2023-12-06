@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 
 import { DetailedBill, DetailedBillPaidRecord } from '@/types/model'
 import BaseForm from '../common/BaseDialog'
+import CalculatorField from '../common/CalculatorField'
 import BillPaidRecordTable from './BillPaidRecordTable'
 
 import { Typography, Grid, TextField } from '@mui/material'
@@ -163,12 +164,12 @@ function OwedBillDialog({
                     </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    <TextField
+                    <CalculatorField
                         fullWidth
                         disabled={!hasBillDetails}
-                        label={'Your Paid Amount'}
+                        label={'Your Paid Amount (You can use equation here)'}
                         value={currentPaidAmount}
-                        onChange={(e) => setCurrentPaidAmount(e.target.value)}
+                        onChange={(value) => setCurrentPaidAmount(value)}
                     />
                 </Grid>
                 <Grid item xs={12}>

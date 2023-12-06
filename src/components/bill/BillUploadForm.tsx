@@ -11,6 +11,7 @@ import ImageCropPicker from '@/components/common/ImageCropPicker'
 
 import toastHelper from '@/utils/toast'
 import { dataURItoBlob } from '@/utils/image'
+import CalculatorField from '../common/CalculatorField'
 
 type BillUploadFormProps = {
     userList: SelectOptions[]
@@ -143,11 +144,10 @@ export default function BillUploadForm({ userList }: BillUploadFormProps) {
             </Grid>
 
             <Grid item xs={12} md={6} lg={6} mb={2}>
-                <TextField
-                    label={'Total Price'}
+                <CalculatorField
+                    label={'Total Price (You can use equation here)'}
                     value={totalPrice}
-                    onChange={(e) => {
-                        const value = e.target.value
+                    onChange={(value) => {
                         setTotalPrice(value)
                     }}
                     variant={'outlined'}

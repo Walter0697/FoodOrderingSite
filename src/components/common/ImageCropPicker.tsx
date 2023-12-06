@@ -250,7 +250,9 @@ export default function ImageCropPicker({
                     fullWidth
                     onClick={() => onOriginalSelect()}
                     disabled={
-                        selected === ImageCropPickerType.Original || disabled
+                        selected === ImageCropPickerType.Original ||
+                        disabled ||
+                        !currentImage
                     }
                 >
                     Select Original
