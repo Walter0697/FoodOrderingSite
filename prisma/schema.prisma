@@ -124,6 +124,7 @@ model SeedHistory {
 
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = "linux-arm64-openssl-3.0.x"
 }
 
 datasource db {

@@ -1,4 +1,4 @@
-FROM node:20-alpine AS dependencies
+FROM node:20 AS dependencies
 RUN npm install -g pnpm
 WORKDIR /app
 COPY package.json package.json ./
@@ -7,14 +7,16 @@ RUN pnpm install --production
 RUN pnpm install prisma
 RUN npx prisma generate
 
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 RUN npm install -g pnpm
 WORKDIR /app
 COPY . .
 COPY --from=dependencies /app/node_modules ./node_modules
 RUN pnpm build
 
-FROM node:20-alpine AS runner
+FROM node:20-slim AS runner
+RUN apt update && apt install libssl-dev dumb-init -y --no-install-recommends
+
 WORKDIR /app
 RUN npm install -g pnpm
 COPY --from=builder /app/public ./public

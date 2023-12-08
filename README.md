@@ -20,7 +20,6 @@
 -   Prisma
 -   Socket.io
 -   Million.js
--   Discord.js
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 

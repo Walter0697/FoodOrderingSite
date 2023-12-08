@@ -66,14 +66,16 @@ function BaseForm({
                     >
                         Close
                     </LoadingButton>
-                    <LoadingButton
-                        variant="contained"
-                        color={'primary'}
-                        type={'submit'}
-                        loading={loading}
-                    >
-                        Confirm
-                    </LoadingButton>
+                    {onSubmitHandler && (
+                        <LoadingButton
+                            variant="contained"
+                            color={'primary'}
+                            type={'submit'}
+                            loading={loading}
+                        >
+                            Confirm
+                        </LoadingButton>
+                    )}
                 </DialogActions>
             </form>
         </Dialog>

@@ -41,7 +41,7 @@ const alertUserWhenUploadedBill = async (
             })
         }
     }
-    
+
     const postBody: BillUploadInfo = {
         restaurant: bill.restaurantName,
         users: items,
@@ -62,8 +62,39 @@ const alertUserWhenUploadedBill = async (
     console.time(`Sent alert for bill ${bill.id}`)
 }
 
+type BillCompleteInfo = {
+    restaurant: string
+    uploadUsername: string
+}
+
+const alertUserWhenBillCompleted = async (uploadUser: User, bill: Bill) => {
+    console.time(`Sending complete alert for bill ${bill.id}`)
+
+    const discordCompleteBillUrl =
+        process.env.DISCORD_URL + '/api/bill_complete'
+
+    const postBody: BillCompleteInfo = {
+        restaurant: bill.restaurantName,
+        uploadUsername: uploadUser.discordUsername ?? '',
+    }
+
+    const result = await axios.request({
+        method: 'POST',
+        url: discordCompleteBillUrl,
+        data: postBody,
+    })
+
+    if (result.status !== 200) {
+        console.log('Cannot send bill complete alert to discord')
+        return
+    }
+
+    console.time(`Sent complete alert for bill ${bill.id}`)
+}
+
 const discordHelper = {
     alertUserWhenUploadedBill,
+    alertUserWhenBillCompleted,
 }
 
 export default discordHelper

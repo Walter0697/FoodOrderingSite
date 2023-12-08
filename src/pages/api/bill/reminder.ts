@@ -33,7 +33,9 @@ export default async function handler(
             for (let i = 0; i < owedPendingBills.length; i++) {
                 const bill = owedPendingBills[i]
                 const myPaidRecord = paidRecords.find(
-                    (record) => record.billId === bill.id
+                    (record) =>
+                        record.billId === bill.id &&
+                        record.createdBy === user.id
                 )
                 if (!myPaidRecord) {
                     unpaidRecord.add(bill.id)

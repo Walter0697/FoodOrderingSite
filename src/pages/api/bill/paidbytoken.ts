@@ -5,6 +5,7 @@ import { BillStatus } from '@/types/enum'
 import billService from '@/services/bill'
 import billPaidRecordService from '@/services/billPaidRecord'
 import userService from '@/services/user'
+import paidService from '@/services/paid'
 
 import { extractBillSecret } from '@/utils/auth'
 
@@ -61,6 +62,8 @@ export default async function handler(
                 body.notes,
                 user.id
             )
+
+            paidService.checkBillPaidRecordComplete(billSecret.billId)
 
             res.status(200).json({ success: true, data: result })
         }

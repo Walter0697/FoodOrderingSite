@@ -4,6 +4,7 @@ import { BillStatus } from '@/types/enum'
 
 import billService from '@/services/bill'
 import billPaidRecordService from '@/services/billPaidRecord'
+import paidService from '@/services/paid'
 import { userMiddleware } from '@/middlewares/user'
 
 type CreateBillPaidRecordRequestBody = {
@@ -51,6 +52,8 @@ export default async function handler(
                 body.notes,
                 user.id
             )
+
+            paidService.checkBillPaidRecordComplete(body.billId)
 
             res.status(200).json({ success: true, data: result })
         }
