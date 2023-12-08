@@ -77,7 +77,7 @@ function OwedBillDialog({
 
             const priceRegex = /^\d+(\.\d{1,2})?$/
             if (!priceRegex.test(currentPaidAmount)) {
-                toastHelper.error('Price Amount is invalid')
+                toastHelper.error('Paid Amount is invalid')
                 setLoading(false)
                 return
             }

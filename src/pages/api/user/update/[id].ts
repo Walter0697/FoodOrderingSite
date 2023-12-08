@@ -5,6 +5,7 @@ import { adminMiddleware } from '@/middlewares/admin'
 
 type EditUserRequestBody = {
     activated: boolean
+    discordUsername: string
 }
 
 type ResponseData = {
@@ -30,9 +31,10 @@ export default async function handler(
             }
 
             const body: EditUserRequestBody = JSON.parse(req.body)
-            const success = await userService.setUserActivated(
+            const success = await userService.updateUserInformation(
                 id,
-                body.activated
+                body.activated,
+                body.discordUsername,
             )
 
             if (!success) {

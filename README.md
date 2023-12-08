@@ -20,6 +20,7 @@
 -   Prisma
 -   Socket.io
 -   Million.js
+-   Discord.js
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
@@ -125,6 +126,8 @@ pnpm cypress:open
 -   [] Watch history price for the current product
 -   ✅ Adding company from for product
 -   ✅ History summary page
+-   ✅ Bill splitting functionality
+-   ✅ Notify related user whenever bill was uploaded
 
 ## 🐜 Limitation <a name = "limitation"></a>
 

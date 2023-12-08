@@ -42,6 +42,11 @@ const headCells = [
         label: 'Display Name',
     },
     {
+        id: 'discordusername',
+        paddingRight: false,
+        label: 'Discord Name',
+    },
+    {
         id: 'rank',
         paddingRight: false,
         label: 'Rank',
@@ -128,6 +133,19 @@ function UserList({ itemList }: OrderingTableProps) {
                         return b.displayname.localeCompare(a.displayname)
                     } else {
                         return a.displayname.localeCompare(b.displayname)
+                    }
+                })
+            }
+            if (currentSorting.orderBy === 'discordusername') {
+                return itemList.toSorted((a, b) => {
+                    if (currentSorting.order === 'desc') {
+                        return b.discordUsername.localeCompare(
+                            a.discordUsername
+                        )
+                    } else {
+                        return a.discordUsername.localeCompare(
+                            b.discordUsername
+                        )
                     }
                 })
             }
@@ -248,6 +266,9 @@ function UserList({ itemList }: OrderingTableProps) {
                                             </TableCell>
                                             <TableCell align={'left'}>
                                                 {item.displayname}
+                                            </TableCell>
+                                            <TableCell align={'left'}>
+                                                {item.discordUsername}
                                             </TableCell>
                                             <TableCell align={'left'}>
                                                 {item.rank}

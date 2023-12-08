@@ -2,9 +2,11 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import multer from 'multer'
 
 import billService from '@/services/bill'
+import userService from '@/services/user'
 import { userMiddleware } from '@/middlewares/user'
 
 import { saveImageIntoStorage } from '@/utils/image'
+import discordHelper from '@/services/discord'
 
 async function parseFormData(
     req: NextApiRequest & { files?: any },
@@ -74,6 +76,11 @@ export default async function handler(
                 },
                 user.id
             )
+
+            const targetUserList = await userService.getUserByIdList(
+                targetUsers
+            )
+            discordHelper.alertUserWhenUploadedBill(targetUserList, bill, user)
 
             res.status(200).json({
                 success: true,

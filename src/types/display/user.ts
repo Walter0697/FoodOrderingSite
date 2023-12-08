@@ -2,6 +2,7 @@ export type UserListItem = {
     id: number
     username: string
     displayname: string
+    discordUsername: string
     rank: string
     activated: boolean // admin decide if disabling an account
     favFood: string

@@ -50,6 +50,7 @@ async function getUserList(): Promise<UserListItem[]> {
             favFood: favFood,
             birthday: birthday,
             signed: user.password ? true : false,
+            discordUsername: user.discordUsername ?? '',
         }
         return output
     })

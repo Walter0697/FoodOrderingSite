@@ -4,6 +4,11 @@ import userService from '@/services/user'
 
 import { User } from '@prisma/client'
 
+export type BillOrderInfo = {
+    userId: number
+    billId: number
+}
+
 export type JwtInfo = {
     id: number
     username: string
@@ -36,6 +41,40 @@ export const retrieveBearerToken = (authorization: string): string | null => {
 
     const token = list[1]
     return token
+}
+
+export const generateBillSecret = async (
+    userId: number,
+    billId: number
+): Promise<string> => {
+    const secret: string = process.env.BILL_ORDER_SECRET ?? 'secret'
+    const expire: string = '1d' // we would like to set it for 1 day only since you can still later login to update
+    const jwtInfo: BillOrderInfo = {
+        userId,
+        billId,
+    }
+    const token = jwt.sign(jwtInfo, secret, {
+        expiresIn: expire,
+    })
+    return token
+}
+
+export const extractBillSecret = async (
+    token: string
+): Promise<BillOrderInfo | null> => {
+    try {
+        const secret: string = process.env.BILL_ORDER_SECRET ?? 'secret'
+        return new Promise((resolve, reject) => {
+            jwt.verify(token, secret, (err, decoded) => {
+                if (err) {
+                    resolve(null)
+                }
+                resolve(decoded as BillOrderInfo)
+            })
+        })
+    } catch (err) {
+        return null
+    }
 }
 
 export const generateToken = async (user: User): Promise<string> => {

@@ -160,6 +160,7 @@ export default function BillUploadForm({ userList }: BillUploadFormProps) {
                 <Autocomplete
                     multiple={true}
                     value={targetUsers}
+                    disableCloseOnSelect
                     onChange={(event, newValue) => {
                         setTargetUsers(newValue)
                     }}

@@ -25,6 +25,17 @@ const getUserById = async (id: number): Promise<User | null> => {
     return user
 }
 
+const getUserByIdList = async (idList: number[]): Promise<User[]> => {
+    const users = await getPrisma().user.findMany({
+        where: {
+            id: {
+                in: idList,
+            },
+        },
+    })
+    return users
+}
+
 const activateUser = async (
     id: number,
     birthday: string,
@@ -78,9 +89,10 @@ const updateUser = async (
     return !!user
 }
 
-const setUserActivated = async (
+const updateUserInformation = async (
     id: number,
-    activated: boolean
+    activated: boolean,
+    discordUsername: string
 ): Promise<boolean> => {
     const user = await getPrisma().user.update({
         where: {
@@ -88,6 +100,7 @@ const setUserActivated = async (
         },
         data: {
             activated: activated,
+            discordUsername: discordUsername,
         },
     })
     return !!user
@@ -97,9 +110,10 @@ const userService = {
     getAllUsers,
     getUserByUsername,
     getUserById,
+    getUserByIdList,
     activateUser,
     updateUser,
-    setUserActivated,
+    updateUserInformation,
 }
 
 export default userService

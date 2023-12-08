@@ -4,6 +4,7 @@ model User {
   displayname String 
   password  String?
   rank      String
+  discordUsername String?
   extraInformation String?
   activated Boolean @default(true)
   createdAt DateTime @default(now())

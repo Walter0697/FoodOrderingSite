@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react'
 import { UserListItem } from '@/types/display/user'
 import BaseForm from '../common/BaseDialog'
 
-import { Typography, Grid, Switch } from '@mui/material'
+import { Typography, Grid, Switch, TextField } from '@mui/material'
 
 import toastHelper from '@/utils/toast'
 
@@ -25,10 +25,12 @@ function UserEditDialog({
     const [loading, setLoading] = useState<boolean>(false)
 
     const [activated, setActivated] = useState<boolean>(false)
+    const [discordUsername, setDiscordUsername] = useState<string>('')
 
     useEffect(() => {
         if (open && user) {
             setActivated(user.activated)
+            setDiscordUsername(user.discordUsername ?? '')
         }
     }, [open, user])
 
@@ -41,6 +43,7 @@ function UserEditDialog({
 
         const data = {
             activated,
+            discordUsername,
         }
 
         try {
@@ -99,6 +102,15 @@ function UserEditDialog({
                     <Switch
                         checked={activated}
                         onChange={(e) => setActivated(e.target.checked)}
+                        disabled={loading}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        label={'Discord Username'}
+                        value={discordUsername}
+                        fullWidth
+                        onChange={(e) => setDiscordUsername(e.target.value)}
                         disabled={loading}
                     />
                 </Grid>
