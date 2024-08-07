@@ -26,6 +26,7 @@
         "cheerio": "1.0.0-rc.12",
         "cookies-next": "^4.0.0",
         "dayjs": "^1.11.10",
+        "fireworks-js": "^2.10.8",
         "jsonwebtoken": "^9.0.2",
         "lodash": "^4.17.21",
         "mathjs": "^12.1.0",
