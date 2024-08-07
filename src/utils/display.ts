@@ -41,11 +41,15 @@ export const getColorForOrderingType = (orderingType: OrderingType) => {
     return null
 }
 
-export const getProductIdentifierFromURL = (url: string) => {
+export const getProductIdentifierFromURL = (url: string, company: string) => {
+    const companyInfo = FoodCompanyInformation.find(s => s.Name === company)
+    if (!companyInfo || !companyInfo.activated) {
+        return null
+    }
+
     const decoded = decodeURIComponent(url)
-    const split = decoded.split('/')
-    const identifier = split[split.length - 1]
-    return identifier
+    const identifier = decoded.replace(companyInfo.Prefix, '')
+    return encodeURIComponent(identifier)
 }
 
 export const convertMonthlyOrderingToListItem = (
@@ -84,6 +88,8 @@ export const convertOrderingToOrderingListItem = (
         // by default, it is the first one
         companyInfo = FoodCompanyInformation[0]
     }
+
+    const identifierDecoded = decodeURIComponent(ordering.product?.identifier ?? '')
     return {
         id: ordering.id ?? -1,
         productName: ordering.product?.name ?? '',
@@ -92,7 +98,7 @@ export const convertOrderingToOrderingListItem = (
         quantity: ordering.quantity ?? 0,
         type: ordering.category as OrderingType,
         totalPrice: (ordering.priceFloat ?? 0) * (ordering.quantity ?? 0),
-        link: companyInfo.Prefix + ordering.product?.identifier ?? '',
+        link: companyInfo.Prefix + identifierDecoded,
         createdBy: ordering.creator?.displayname ?? '',
         updatedBy: ordering.updater?.displayname ?? '',
     }

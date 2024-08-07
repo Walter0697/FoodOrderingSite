@@ -14,8 +14,7 @@ COPY . .
 COPY --from=dependencies /app/node_modules ./node_modules
 RUN pnpm build
 
-FROM node:20-slim AS runner
-RUN apt update && apt install libssl-dev dumb-init -y --no-install-recommends
+FROM node:20 AS runner
 
 WORKDIR /app
 RUN npm install -g pnpm

@@ -58,9 +58,12 @@ export default async function handler(
                 })
             }
 
-            const productIdentifier = getProductIdentifierFromURL(body.url)
+            const productIdentifier = getProductIdentifierFromURL(
+                body.url,
+                productInformation.companyName
+            )
             const product = await productService.upsertProduct(
-                productIdentifier,
+                productIdentifier ?? '',
                 productInformation
             )
 

@@ -40,6 +40,7 @@ export const performActionOnList = (
         // by default, it is the first one
         companyInfo = FoodCompanyInformation[0]
     }
+    const identifierDecoded = decodeURIComponent(actionData.productIdentifier ?? '')
     switch (actionData.actionType) {
         case SocketActionType.Create: {
             newList.push({
@@ -51,7 +52,7 @@ export const performActionOnList = (
                 type: actionData.type as OrderingType,
                 totalPrice:
                     (actionData.unitPrice ?? 0) * (actionData.quantity ?? 0),
-                link: companyInfo.Prefix + actionData.productIdentifier,
+                link: companyInfo.Prefix + identifierDecoded,
                 createdBy: actionData.userDisplayName ?? '',
                 updatedBy: actionData.userDisplayName ?? '',
             })
@@ -69,7 +70,7 @@ export const performActionOnList = (
                 ;(editingItem.totalPrice =
                     (actionData.unitPrice ?? 0) * (actionData.quantity ?? 0)),
                     (editingItem.link =
-                        companyInfo.Prefix + actionData.productIdentifier)
+                        companyInfo.Prefix + identifierDecoded)
                 editingItem.updatedBy = actionData.userDisplayName ?? ''
             }
             break
