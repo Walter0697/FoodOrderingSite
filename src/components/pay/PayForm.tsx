@@ -141,7 +141,7 @@ function PayForm({
                                 {notes && (
                                     <>
                                         <Typography variant="h6">
-                                            {uploadUser}'s Notes
+                                            {uploadUser}&apos;s Notes
                                         </Typography>
                                         <Typography
                                             variant="body1"

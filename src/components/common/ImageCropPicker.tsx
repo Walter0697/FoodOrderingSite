@@ -180,6 +180,7 @@ export default function ImageCropPicker({
                             src={imagePreview}
                             width={imageWidth}
                             height={'auto'}
+                            alt={'Image Cropper'}
                         />
                     )}
                     <input

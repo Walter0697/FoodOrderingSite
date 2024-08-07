@@ -8,15 +8,11 @@ import {
 } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 
-const Transition: React.ForwardRefExoticComponent<
-    React.PropsWithRef<React.ComponentProps<'div'>>
-> = React.forwardRef(function Transition(props, ref) {
-    return (
-        <Slide direction="up" ref={ref} {...props}>
-            <div>{props.children}</div>
-        </Slide>
-    )
-})
+const Transition = React.forwardRef<HTMLDivElement, React.ComponentProps<typeof Slide>>(
+    function Transition(props, ref) {
+        return <Slide direction="up" ref={ref} {...props} />;
+    }
+)
 
 type BaseFormProps = {
     open: boolean

@@ -34,6 +34,7 @@ function ServerImage({ src }: ServerImageProps) {
             {image && (
                 <img
                     src={`data:image/${extension};base64,${image}`}
+                    alt={'Image'}
                     style={{
                         width: '100%',
                         height: '100%',
